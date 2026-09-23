@@ -2,7 +2,7 @@
 
 # Compiled output
 /dist
-/tmp
+/tmpgit init
 /out-tsc
 /bazel-out
 
