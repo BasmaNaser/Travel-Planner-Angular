@@ -1,75 +1,92 @@
 <nav class="navbar navbar-expand-lg bg-white shadow-sm fixed-top">
-    <div class="container">
+  <div class="container">
 
-        <a class="navbar-brand fw-bold" routerLink="/">
-            Trip<span>Mate</span>
-        </a>
+    <a class="navbar-brand fw-bold" routerLink="/">
+      Trip<span>Mate</span>
+    </a>
+
+    <button
+      class="navbar-toggler border-0 shadow-none"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation">
+
+      <span class="navbar-toggler-icon"></span>
+
+    </button>
+
+    <div
+      class="collapse navbar-collapse"
+      id="navbarNav">
+
+      <ul class="navbar-nav mx-auto">
+
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            routerLink="/home"
+            routerLinkActive="active">
+            Home
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            routerLink="/about"
+            routerLinkActive="active">
+            About Us
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            routerLink="/services"
+            routerLinkActive="active">
+            Services
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            routerLink="/destinations"
+            routerLinkActive="active">
+            Destinations
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            routerLink="/contact"
+            routerLinkActive="active">
+            Contact Us
+          </a>
+        </li>
+
+      </ul>
+
+      <div class="d-flex gap-2">
 
         <button
-            class="navbar-toggler border-0 shadow-none"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav"
-            aria-controls="navbarNav"
-            aria-expanded="false"
-            aria-label="Toggle navigation">
-
-            <span class="navbar-toggler-icon"></span>
-
+          class="btn login-btn"
+          routerLink="/login">
+          Login
         </button>
 
-        <div class="collapse navbar-collapse" id="navbarNav">
+        <button
+          class="btn login-btn"
+          routerLink="/profile">
+          Profile
+        </button>
 
-            <ul class="navbar-nav mx-auto">
+      </div>
 
-                <li class="nav-item">
-                    <a class="nav-link" routerLink="/home">
-                        Home
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link active" routerLink="about">
-                        About Us
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" routerLink="services">
-                        Services
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" routerLink="destinations">
-                        Destinations
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" routerLink="contact">
-                        Contact Us
-                    </a>
-                </li>
-
-            </ul>
-
-            <div class="d-flex gap-2">
-
-                <button
-                    class="btn login-btn"
-                    routerLink="login">
-                    Login
-                </button>
-
-                <button
-                    class="btn login-btn"
-                    routerLink="profile">
-                    Profile
-                </button>
-
-            </div>
-
-        </div>
     </div>
+  </div>
 </nav>

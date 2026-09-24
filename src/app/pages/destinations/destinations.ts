@@ -1,4 +1,3 @@
-
 import {
   Component,
   OnInit,
@@ -8,6 +7,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { Navbar } from '../../components/navbar/navbar';
+import { Footer } from '../../components/footer/footer';
 
 import { DestinationService } from '../../services/destination.service';
 import { Destination } from '../../Models/destination';
@@ -17,7 +18,9 @@ import { Destination } from '../../Models/destination';
   imports: [
     CommonModule,
     FormsModule,
-    RouterLink
+    RouterLink,
+    Navbar,
+    Footer
   ],
   templateUrl: './destinations.html',
   styleUrls: ['./destinations.css']
@@ -41,6 +44,7 @@ export class DestinationComponent implements OnInit {
     Description: '',
     Image: '',
     Category: '',
+    Badge: '',
     Duration: 0,
     PricePerPerson: 0,
     BaseTime: 0,
@@ -64,21 +68,12 @@ export class DestinationComponent implements OnInit {
         next: (response) => {
           console.log('API Response:', response);
 
-          this.destinations = response.destinations || [];
+          this.destinations =
+            response.destinations || [];
 
           this.filteredDestinationsList = [
             ...this.destinations
           ];
-
-          console.log(
-            'Destinations:',
-            this.destinations
-          );
-
-          console.log(
-            'Filtered:',
-            this.filteredDestinationsList
-          );
 
           this.errorMessage = '';
 
@@ -151,6 +146,7 @@ export class DestinationComponent implements OnInit {
       Description: '',
       Image: '',
       Category: '',
+      Badge: '',
       Duration: 0,
       PricePerPerson: 0,
       BaseTime: 0,
@@ -268,6 +264,11 @@ export class DestinationComponent implements OnInit {
         .filter(
           item => item !== ''
         );
+
+    console.log(
+      'Badge before update:',
+      this.newDestination.Badge
+    );
 
     this.destinationService
       .updateDestination(

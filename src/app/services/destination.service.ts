@@ -1,4 +1,3 @@
-
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
@@ -76,6 +75,11 @@ export class DestinationService {
     );
 
     formData.append(
+      'Badge',
+      destination.Badge || ''
+    );
+
+    formData.append(
       'Duration',
       destination.Duration.toString()
     );
@@ -147,6 +151,11 @@ export class DestinationService {
     );
 
     formData.append(
+      'Badge',
+      destination.Badge || ''
+    );
+
+    formData.append(
       'Duration',
       destination.Duration.toString()
     );
@@ -197,7 +206,6 @@ export class DestinationService {
     );
   }
 
-
   getReviews(
     destinationId: string
   ) {
@@ -208,7 +216,6 @@ export class DestinationService {
       `${this.reviewApiUrl}/${destinationId}`
     );
   }
-
 
   addReview(
     review: {
@@ -224,7 +231,6 @@ export class DestinationService {
     );
   }
 
-
   updateReview(
     id: string,
     review: {
@@ -239,7 +245,6 @@ export class DestinationService {
     );
   }
 
-
   deleteReview(
     id: string
   ) {
@@ -250,4 +255,3 @@ export class DestinationService {
   }
 
 }
-
