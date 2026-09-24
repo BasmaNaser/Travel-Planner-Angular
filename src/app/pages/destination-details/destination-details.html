@@ -1,0 +1,554 @@
+<div class="details-page">
+
+  <div *ngIf="destination" class="container">
+
+    <div class="hero-card">
+
+      <div class="hero-image">
+
+        <img
+          *ngIf="destination.Image"
+          [src]="destination.Image"
+          [alt]="destination.Name"
+        >
+
+        <div
+          *ngIf="!destination.Image"
+          class="no-image"
+        >
+          <i class="bi bi-image"></i>
+          <span>No Image</span>
+        </div>
+
+        <span class="category-badge">
+          {{ destination.Category }}
+        </span>
+
+      </div>
+
+      <div class="hero-info">
+
+        <div class="location">
+          <i class="bi bi-geo-alt-fill"></i>
+          {{ destination.Location }}
+        </div>
+
+        <h1>
+          {{ destination.Name }}
+        </h1>
+
+        <p>
+          Discover this amazing destination and plan
+          your next unforgettable adventure.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <div class="details-grid">
+
+      <div class="left-content">
+
+        <section class="details-section">
+
+          <div class="section-title">
+            <i class="bi bi-info-circle-fill"></i>
+
+            <h2>
+              About Destination
+            </h2>
+          </div>
+
+          <p class="description">
+            {{ destination.Description }}
+          </p>
+
+        </section>
+
+
+        <section class="details-section">
+
+          <div class="section-title">
+            <i class="bi bi-stars"></i>
+
+            <h2>
+              Things To Do
+            </h2>
+          </div>
+
+          <div
+            class="things-list"
+            *ngIf="destination.ThingsToDo?.length"
+          >
+
+            <div
+              class="thing-item"
+              *ngFor="let thing of destination.ThingsToDo"
+            >
+
+              <i class="bi bi-check-circle-fill"></i>
+
+              <span>
+                {{ thing }}
+              </span>
+
+            </div>
+
+          </div>
+
+          <p
+            *ngIf="!destination.ThingsToDo?.length"
+            class="empty-text"
+          >
+            No activities available yet.
+          </p>
+
+        </section>
+
+      </div>
+
+
+      <div class="right-content">
+
+        <div class="trip-card">
+
+          <div class="trip-header">
+
+            <span>
+              Trip Information
+            </span>
+
+            <i class="bi bi-airplane-fill"></i>
+
+          </div>
+
+          <div class="price-box">
+
+            <span>
+              Price per person
+            </span>
+
+            <strong>
+              ${{ destination.PricePerPerson }}
+            </strong>
+
+          </div>
+
+          <div class="info-list">
+
+            <div class="info-row">
+
+              <div class="info-icon">
+                <i class="bi bi-calendar3"></i>
+              </div>
+
+              <div>
+                <span>
+                  Duration
+                </span>
+
+                <strong>
+                  {{ destination.Duration }} Days
+                </strong>
+              </div>
+
+            </div>
+
+
+            <div class="info-row">
+
+              <div class="info-icon">
+                <i class="bi bi-people-fill"></i>
+              </div>
+
+              <div>
+                <span>
+                  Available Seats
+                </span>
+
+                <strong>
+                  {{ destination.AvailableSeats }}
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <div class="info-row">
+
+              <div class="info-icon">
+                <i class="bi bi-clock-fill"></i>
+              </div>
+
+              <div>
+                <span>
+                  Base Time
+                </span>
+
+                <strong>
+                  {{ destination.BaseTime }}
+                </strong>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="book-btn"
+          >
+
+            <span>
+              Book This Trip
+            </span>
+
+            <i class="bi bi-arrow-right"></i>
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         Reviews
+    ========================== -->
+
+    <section class="reviews-section">
+
+      <div class="reviews-heading">
+
+        <div>
+
+          <span class="reviews-label">
+            TRAVELER REVIEWS
+          </span>
+
+          <h2>
+            What travelers say
+          </h2>
+
+          <p>
+            Read experiences from people who visited this destination.
+          </p>
+
+        </div>
+
+
+        <div class="rating-overview">
+
+          <strong>
+            {{ getAverageRating() | number:'1.1-1' }}
+          </strong>
+
+          <div>
+
+            <div class="overview-stars">
+
+              <i
+                *ngFor="
+                  let star of getRatingStars(
+                    getAverageRating()
+                  )
+                "
+                class="bi"
+                [class.bi-star-fill]="star"
+                [class.bi-star]="!star"
+              ></i>
+
+            </div>
+
+            <span>
+              {{ reviews.length }} traveler reviews
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div
+        *ngIf="isReviewsLoading"
+        class="reviews-loading"
+      >
+        Loading reviews...
+      </div>
+
+
+      <div
+        *ngIf="
+          !isReviewsLoading &&
+          reviews.length === 0
+        "
+        class="empty-reviews"
+      >
+
+        <i class="bi bi-chat-square-text"></i>
+
+        <p>
+          No reviews yet.
+        </p>
+
+        <span>
+          Be the first traveler to share your experience.
+        </span>
+
+      </div>
+
+
+      <div
+        *ngIf="
+          !isReviewsLoading &&
+          reviews.length > 0
+        "
+        class="reviews-list"
+      >
+
+        <div
+          class="review-item"
+          *ngFor="let review of reviews"
+        >
+
+          <div class="review-user">
+
+            <div class="review-avatar">
+              <i class="bi bi-person-fill"></i>
+            </div>
+
+            <div class="review-user-info">
+
+              <strong>
+                Traveler
+              </strong>
+
+              <span>
+                {{ getReviewDate(review) }}
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="review-body">
+
+            <div class="review-stars">
+
+              <i
+                *ngFor="
+                  let star of getRatingStars(
+                    review.Rating
+                  )
+                "
+                class="bi"
+                [class.bi-star-fill]="star"
+                [class.bi-star]="!star"
+              ></i>
+
+            </div>
+
+
+            <div
+              *ngIf="
+                editingReviewId !== review._id
+              "
+            >
+
+              <p class="review-text">
+                {{ review.Comment }}
+              </p>
+
+
+              <div class="review-actions">
+
+                <button
+                  type="button"
+                  (click)="startEditReview(review)"
+                >
+                  Edit
+                </button>
+
+                <button
+                  type="button"
+                  (click)="deleteReview(review._id!)"
+                >
+                  Delete
+                </button>
+
+              </div>
+
+            </div>
+
+
+            <div
+              *ngIf="
+                editingReviewId === review._id
+              "
+              class="review-edit"
+            >
+
+              <div class="rating-input">
+
+                <button
+                  type="button"
+                  *ngFor="let star of [1,2,3,4,5]"
+                  (click)="editingRating = star"
+                >
+
+                  <i
+                    class="bi"
+                    [class.bi-star-fill]="
+                      star <= editingRating
+                    "
+                    [class.bi-star]="
+                      star > editingRating
+                    "
+                  ></i>
+
+                </button>
+
+              </div>
+
+
+              <textarea
+                [(ngModel)]="editingComment"
+                rows="3"
+              ></textarea>
+
+
+              <div class="edit-buttons">
+
+                <button
+                  type="button"
+                  class="save-btn"
+                  (click)="updateReview()"
+                >
+                  Save
+                </button>
+
+                <button
+                  type="button"
+                  class="cancel-btn"
+                  (click)="cancelEdit()"
+                >
+                  Cancel
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- Write Review -->
+
+      <div class="write-review">
+
+        <div class="write-review-title">
+
+          <div class="write-icon">
+            <i class="bi bi-pencil-square"></i>
+          </div>
+
+          <div>
+
+            <h3>
+              Share your experience
+            </h3>
+
+            <p>
+              How was your trip?
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="rating-input">
+
+          <button
+            type="button"
+            *ngFor="let star of [1,2,3,4,5]"
+            (click)="selectRating(star)"
+          >
+
+            <i
+              class="bi"
+              [class.bi-star-fill]="
+                star <= selectedRating
+              "
+              [class.bi-star]="
+                star > selectedRating
+              "
+            ></i>
+
+          </button>
+
+        </div>
+
+
+        <textarea
+          [(ngModel)]="reviewComment"
+          rows="4"
+          placeholder="Tell other travelers about your experience..."
+        ></textarea>
+
+
+        <p
+          *ngIf="reviewError"
+          class="review-error"
+        >
+          {{ reviewError }}
+        </p>
+
+
+        <button
+          type="button"
+          class="submit-review-btn"
+          (click)="submitReview()"
+        >
+
+          <span>
+            Post Review
+          </span>
+
+          <i class="bi bi-arrow-right"></i>
+
+        </button>
+
+      </div>
+
+    </section>
+
+  </div>
+
+
+  <div
+    *ngIf="errorMessage"
+    class="error-message"
+  >
+
+    <i class="bi bi-exclamation-circle"></i>
+
+    {{ errorMessage }}
+
+  </div>
+
+</div>

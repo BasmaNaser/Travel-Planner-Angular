@@ -1,0 +1,150 @@
+<div class="container py-5">
+  <div class="page-title">
+    <h1>Explore Destinations</h1>
+    <p>Discover amazing places around the world.</p>
+  </div>
+
+  <!-- Search -->
+  <div class="search-box">
+    <i class="bi bi-search"></i>
+
+    <input
+      type="text"
+      [(ngModel)]="searchText"
+      (input)="searchDestinations()"
+      placeholder="Search destination..."
+    />
+  </div>
+
+  <!-- Admin -->
+  <div class="admin-area" *ngIf="isAdmin">
+    <button class="new-btn" (click)="openAddForm()">
+      <i class="bi bi-plus-lg"></i>
+      New Card
+    </button>
+
+    <!-- Add / Update Form -->
+    <div class="form-box" *ngIf="showForm">
+      <h2>
+        {{ isEditMode ? 'Update Destination' : 'Add Destination' }}
+      </h2>
+
+      <input [(ngModel)]="newDestination.Name" placeholder="Destination Name" />
+
+      <input [(ngModel)]="newDestination.Location" placeholder="Location" />
+
+      <input [(ngModel)]="newDestination.Description" placeholder="Description" />
+
+      <input type="number" [(ngModel)]="newDestination.PricePerPerson" placeholder="Price" />
+
+      <input type="number" [(ngModel)]="newDestination.Duration" placeholder="Duration" />
+
+      <input type="number" [(ngModel)]="newDestination.BaseTime" placeholder="Base Time" />
+
+      <input
+        type="number"
+        [(ngModel)]="newDestination.AvailableSeats"
+        placeholder="Available Seats"
+      />
+
+      <select [(ngModel)]="newDestination.Category">
+        <option value="">Category</option>
+        <option value="Trending">Trending</option>
+        <option value="Coastal">Coastal</option>
+        <option value="Adventure">Adventure</option>
+        <option value="Cultural">Cultural</option>
+      </select>
+
+      <textarea [(ngModel)]="thingsToDoText" placeholder="Things To Do (use comma)"></textarea>
+
+      <input type="file" accept="image/*" (change)="onImageSelected($event)" />
+
+      <div class="form-buttons">
+        <button *ngIf="!isEditMode" class="save-btn" (click)="addDestination()">Add Card</button>
+
+        <button *ngIf="isEditMode" class="save-btn" (click)="updateDestination()">
+          Update Card
+        </button>
+
+        <button class="cancel-btn" (click)="closeForm()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cards -->
+  <div class="row g-4 mt-4">
+    <div class="col-12 col-md-6 col-lg-4" *ngFor="let destination of filteredDestinationsList">
+      <div class="destination-card">
+        <!-- Image -->
+        <div class="image-box">
+          <img *ngIf="destination.Image" [src]="destination.Image" [alt]="destination.Name" />
+
+          <div *ngIf="!destination.Image" class="no-image">
+            <i class="bi bi-image"></i>
+          </div>
+
+          <span class="category">
+            {{ destination.Category }}
+          </span>
+        </div>
+
+        <!-- Content -->
+        <div class="card-content">
+          <h2>{{ destination.Name }}</h2>
+
+          <div class="location">
+            <i class="bi bi-geo-alt-fill"></i>
+            {{ destination.Location }}
+          </div>
+
+          <p>
+            {{ destination.Description }}
+          </p>
+
+          <div class="info">
+            <span>
+              <i class="bi bi-clock"></i>
+              {{ destination.Duration }} Days
+            </span>
+
+            <span>
+              <i class="bi bi-people"></i>
+              {{ destination.AvailableSeats }} Seats
+            </span>
+          </div>
+
+          <div class="price">
+            ${{ destination.PricePerPerson }}
+            <small>/ person</small>
+          </div>
+
+          <div class="buttons">
+            <button
+              type="button"
+              class="details-btn"
+              [routerLink]="['/destinations', destination._id]"
+            >
+              <i class="bi bi-eye"></i>
+              View Details
+            </button>
+
+            <button *ngIf="isAdmin" class="update-btn" (click)="openEditForm(destination)">
+              Update
+            </button>
+
+            <button
+              *ngIf="isAdmin"
+              class="delete-btn"
+              (click)="deleteDestination(destination._id!)"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Results -->
+  <div class="no-results" *ngIf="filteredDestinationsList.length === 0">No destinations found.</div>
+</div>

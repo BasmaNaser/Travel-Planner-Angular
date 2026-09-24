@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 import { Home } from './pages/home/home';
 import { About } from './pages/about/about';
 import { Services } from './pages/services/services';
-import { Destination } from './pages/destination/destination';
 import { Details } from './pages/details/details';
 import { Book } from './pages/book/book';
 import { Contact } from './pages/contact/contact';
@@ -15,6 +14,9 @@ import { ResetPasswordSuccessfuly } from './pages/reset-password-successfuly/res
 import { AdminDashboard } from './pages/admin/admin-dashboard/admin-dashboard';
 import { AdminBooking } from './pages/admin/admin-booking/admin-booking';
 import { AdminComplaints } from './pages/admin/admin-complaints/admin-complaints';
+import { DestinationComponent } from './pages/destinations/destinations';
+import { DestinationDetailsComponent } from './pages/destination-details/destination-details';
+
 import { ErrorPage } from './pages/error-page/error-page';
 
 export const routes: Routes = [
@@ -38,10 +40,6 @@ export const routes: Routes = [
     component: Services
   },
 
-  {
-    path: 'destinations',
-    component: Destination
-  },
 
   {
     path: 'details/:id',
@@ -102,9 +100,20 @@ export const routes: Routes = [
     path: 'admin/complaints',
     component: AdminComplaints
   },
+   {
+    path: 'destinations',
+    component: DestinationComponent,
+    pathMatch: 'full'
+  },
+
+  {
+    path: 'destinations/:id',
+    component: DestinationDetailsComponent
+  },
 
   {
     path: '**',
     component: ErrorPage
   }
+ 
 ];
