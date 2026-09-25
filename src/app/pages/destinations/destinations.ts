@@ -29,6 +29,8 @@ export class DestinationComponent implements OnInit {
 
   destinations: Destination[] = [];
   filteredDestinationsList: Destination[] = [];
+  selectedDestinations: Destination[] = [];
+  showComparison: boolean = false;
   searchText: string = '';
   errorMessage: string = '';
   isAdmin: boolean = true;
@@ -336,4 +338,39 @@ export class DestinationComponent implements OnInit {
         }
       });
   }
+
+  selectForCompare(destination: Destination): void {
+  const alreadySelected = this.selectedDestinations.some(
+    item => item._id === destination._id
+  );
+
+  if (alreadySelected) {
+    this.selectedDestinations = this.selectedDestinations.filter(
+      item => item._id !== destination._id
+    );
+  } else {
+    if (this.selectedDestinations.length >= 2) {
+      alert('You can compare only 2 destinations.');
+      return;
+    }
+
+    this.selectedDestinations.push(destination);
+  }
+
+  console.log('SELECTED:', this.selectedDestinations);
+}
+
+compareDestinations(): void {
+  if (this.selectedDestinations.length !== 2) {
+    return;
+  }
+
+  this.showComparison = true;
+}
+
+closeComparison(): void {
+  this.showComparison = false;
+  this.selectedDestinations = [];
+}
+
 }
