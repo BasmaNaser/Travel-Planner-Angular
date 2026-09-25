@@ -1,0 +1,162 @@
+<div class="container py-5">
+
+  <div class="row justify-content-center align-items-center">
+
+    <div class="col-lg-10">
+
+      <div class="card border-0 shadow rounded-4 overflow-hidden">
+
+        <div class="row g-0">
+
+
+          <div class="col-md-5 d-none d-md-block">
+
+            <img
+              src="/imgs/ChatGPT Image Aug 15, 2026, 04_49_14 AM.png"
+              class="w-100 h-100 object-fit-cover"
+              alt="Travel Planner"
+            >
+
+          </div>
+
+
+          <div class="col-md-7">
+
+            <div class="card-body p-4 p-md-5">
+
+              <div class="text-center mb-4">
+
+                <h2 class="fw-bold">
+                  Welcome Back
+                </h2>
+
+                <p class="text-muted">
+                  Login to your Travel Planner account
+                </p>
+
+              </div>
+
+
+              @if (errorMessage) {
+
+                <div class="alert alert-danger">
+                  {{ errorMessage }}
+                </div>
+
+              }
+
+
+              <form
+                [formGroup]="form"
+                (ngSubmit)="login()"
+              >
+
+
+                <div class="mb-3">
+
+                  <label class="form-label">
+                    Email
+                  </label>
+
+                  <input
+                    type="email"
+                    class="form-control"
+                    formControlName="email"
+                    placeholder="example@gmail.com"
+                  >
+
+                  @if (fieldError('email')) {
+
+                    <small class="text-danger d-block validation-error">
+                      {{ fieldError('email') }}
+                    </small>
+
+                  }
+
+                </div>
+
+
+                <div class="mb-3">
+
+                  <label class="form-label">
+                    Password
+                  </label>
+
+                  <input
+                    type="password"
+                    class="form-control"
+                    formControlName="password"
+                    placeholder="Enter your password"
+                  >
+
+                  @if (fieldError('password')) {
+
+                    <small class="text-danger d-block validation-error">
+                      {{ fieldError('password') }}
+                    </small>
+
+                  }
+
+                </div>
+
+
+                <div class="mb-3 text-end">
+
+                  <a routerLink="/forget-password">
+                    Forgot Password?
+                  </a>
+
+                </div>
+
+
+                <button
+                  type="submit"
+                  class="btn btn-primary w-100"
+                  [disabled]="loading"
+                >
+
+                  @if (loading) {
+
+                    Logging in...
+
+                  } @else {
+
+                    Login
+
+                  }
+
+                </button>
+
+
+              </form>
+
+
+              <div class="text-center mt-4">
+
+                <span class="text-muted">
+                  Don't have an account?
+                </span>
+
+                <a
+                  routerLink="/signup"
+                  class="ms-1"
+                >
+                  Sign Up
+                </a>
+
+              </div>
+
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
