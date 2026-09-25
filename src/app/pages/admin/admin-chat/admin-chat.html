@@ -1,0 +1,109 @@
+
+<div class="admin-chat-container admin-chat-page">
+  <a routerLink="/admin" class="back-button">
+  <i class="bi bi-arrow-left"></i>
+  Back to Dashboard
+</a>
+
+  <h2>Customer Chats</h2>
+
+  <div class="chat-layout">
+
+    <!-- Conversations -->
+    <div class="conversations">
+
+      @if (conversations.length === 0) {
+        <p>No conversations yet.</p>
+      }
+
+      @for (conversation of conversations; track conversation._id) {
+        <div
+          class="conversation-item"
+          (click)="selectConversation(conversation)"
+        >
+
+          <h4>
+            {{ conversation.user?.fullName || 'Unknown User' }}
+          </h4>
+
+          <p>
+            {{ conversation.user?.email || '-' }}
+          </p>
+
+          <small>
+            {{ conversation.lastMessage || 'No messages yet' }}
+          </small>
+
+        </div>
+      }
+
+    </div>
+
+    <!-- Messages -->
+    <div class="messages-area">
+
+      @if (!selectedConversation) {
+
+        <div class="no-conversation">
+          <h4>Select a conversation</h4>
+          <p>Choose a customer to view the messages.</p>
+        </div>
+
+      } @else {
+
+        <div class="messages-header">
+          <h3>
+            {{ selectedConversation.user?.fullName }}
+          </h3>
+
+          <p>
+            {{ selectedConversation.user?.email }}
+          </p>
+        </div>
+
+        <div class="messages">
+
+  @for (message of messages; track message._id) {
+
+    <div
+      class="message"
+      [class.admin-message]="message.senderRole === 'admin'"
+      [class.user-message]="message.senderRole === 'user'"
+    >
+
+      <div class="message-text">
+  {{ message.text }}
+</div>
+
+<small>
+  {{ message.createdAt | date:'short' }}
+</small>
+
+    </div>
+
+  }
+
+</div>
+
+<div class="chat-input">
+
+  <input
+    type="text"
+    [(ngModel)]="newMessage"
+    (keyup.enter)="sendReply()"
+    placeholder="Write a reply..."
+  />
+
+  <button type="button" (click)="sendReply()">
+    Send
+  </button>
+
+</div>
+
+      }
+
+    </div>
+
+  </div>
+
+</div>

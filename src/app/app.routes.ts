@@ -18,12 +18,14 @@ import { DestinationComponent } from './pages/destinations/destinations';
 import { DestinationDetailsComponent } from './pages/destination-details/destination-details';
 
 import { ErrorPage } from './pages/error-page/error-page';
+import { Chat } from './pages/chat/chat';
+import { AdminChat } from './pages/admin/admin-chat/admin-chat';
 
 export const routes: Routes = [
   {
     path: '',
     component: Home,
-    pathMatch:'full'
+    pathMatch: 'full',
   },
   {
     path: 'home',
@@ -32,88 +34,88 @@ export const routes: Routes = [
 
   {
     path: 'about',
-    component: About
+    component: About,
   },
 
   {
     path: 'services',
-    component: Services
+    component: Services,
   },
-
 
   {
     path: 'details/:id',
-    component: Details
+    component: Details,
   },
 
   {
     path: 'book/:id',
-    component: Book
+    component: Book,
   },
 
   {
     path: 'contact',
-    component: Contact
+    component: Contact,
   },
 
   {
     path: 'profile',
-    component: Profile
+    component: Profile,
   },
 
+  { path: 'chat', component: Chat },
+  { path: 'admin/chat', component: AdminChat },
   {
     path: 'login',
-    component: Login
+    component: Login,
   },
 
   {
     path: 'signup',
-    component: Signup
+    component: Signup,
   },
 
   {
     path: 'forget-password',
-    component: ForgetPasswordEmail
+    component: ForgetPasswordEmail,
   },
 
   {
     path: 'create-new-password',
-    component: CreateNewPassword
+    component: CreateNewPassword,
   },
 
   {
     path: 'reset-password-successfully',
-    component: ResetPasswordSuccessfuly
+    component: ResetPasswordSuccessfuly,
   },
 
   {
     path: 'admin',
-    component: AdminDashboard
+    component: AdminDashboard,
   },
 
   {
     path: 'admin/bookings',
-    component: AdminBooking
+    component: AdminBooking,
   },
 
   {
     path: 'admin/complaints',
-    component: AdminComplaints
+    component: AdminComplaints,
   },
-   {
+  {
     path: 'destinations',
     component: DestinationComponent,
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
 
   {
     path: 'destinations/:id',
-    component: DestinationDetailsComponent
+    component: DestinationDetailsComponent,
   },
 
   {
     path: '**',
-    component: ErrorPage
-  }
- 
+    component: ErrorPage,
+  },
 ];

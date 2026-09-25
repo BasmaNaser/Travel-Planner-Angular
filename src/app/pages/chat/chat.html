@@ -1,0 +1,47 @@
+<div class="chat-page admin-chat-page">
+      <a routerLink="/destinations" class="back-button">
+  <i class="bi bi-arrow-left"></i>
+  Go Back
+</a>
+  <div class="chat-container">
+
+  <div class="chat-header">
+    <h3>Travel Planner Support</h3>
+    <p>Chat with our support team</p>
+  </div>
+
+  <div class="messages">
+    @if (messages.length === 0) {
+      <div class="empty-message">No messages yet. Start the conversation!</div>
+    }
+
+   @for (message of messages; track message._id) {
+  <div
+    class="message"
+    [class.user-message]="message.senderRole === 'user'"
+    [class.admin-message]="message.senderRole === 'admin'"
+  >
+    <div class="message-text">
+      {{ message.text }}
+    </div>
+
+    <small>
+      {{ message.createdAt | date:'short' }}
+    </small>
+  </div>
+}
+  </div>
+
+  <div class="chat-input">
+    <input
+      type="text"
+      [(ngModel)]="newMessage"
+      (keyup.enter)="sendMessage()"
+      placeholder="Write a message..."
+    />
+
+    <button type="button" (click)="sendMessage()">Send</button>
+  </div>
+</div>
+</div>
+
