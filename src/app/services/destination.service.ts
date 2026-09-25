@@ -81,22 +81,22 @@ export class DestinationService {
 
     formData.append(
       'Duration',
-      destination.Duration.toString()
+      String(destination.Duration ?? 0)
     );
 
     formData.append(
       'PricePerPerson',
-      destination.PricePerPerson.toString()
+      String(destination.PricePerPerson ?? 0)
     );
 
     formData.append(
       'BaseTime',
-      destination.BaseTime.toString()
+      String(destination.BaseTime ?? 0)
     );
 
     formData.append(
       'AvailableSeats',
-      destination.AvailableSeats.toString()
+      String(destination.AvailableSeats ?? 0)
     );
 
     destination.ThingsToDo.forEach(
@@ -115,9 +115,17 @@ export class DestinationService {
       );
     }
 
+    const token =
+      localStorage.getItem('accessToken');
+
     return this.http.post(
       this.apiUrl,
-      formData
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
     );
   }
 
@@ -157,22 +165,22 @@ export class DestinationService {
 
     formData.append(
       'Duration',
-      destination.Duration.toString()
+      String(destination.Duration ?? 0)
     );
 
     formData.append(
       'PricePerPerson',
-      destination.PricePerPerson.toString()
+      String(destination.PricePerPerson ?? 0)
     );
 
     formData.append(
       'BaseTime',
-      destination.BaseTime.toString()
+      String(destination.BaseTime ?? 0)
     );
 
     formData.append(
       'AvailableSeats',
-      destination.AvailableSeats.toString()
+      String(destination.AvailableSeats ?? 0)
     );
 
     destination.ThingsToDo.forEach(
@@ -191,9 +199,17 @@ export class DestinationService {
       );
     }
 
+    const token =
+      localStorage.getItem('accessToken');
+
     return this.http.patch(
       `${this.apiUrl}/${id}`,
-      formData
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
     );
   }
 
@@ -201,8 +217,16 @@ export class DestinationService {
     id: string
   ) {
 
+    const token =
+      localStorage.getItem('accessToken');
+
     return this.http.delete(
-      `${this.apiUrl}/${id}`
+      `${this.apiUrl}/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
     );
   }
 

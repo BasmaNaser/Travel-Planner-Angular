@@ -1,9 +1,12 @@
 import { Routes } from '@angular/router';
+
 import { Home } from './pages/home/home';
 import { About } from './pages/about/about';
 import { Services } from './pages/services/services';
 import { Details } from './pages/details/details';
-import { Book } from './pages/book/book';
+import { BookingComponent } from './pages/booking/booking';
+import { PaymentsComponent } from './pages/payments/payments';
+import { PaymentMethodComponent } from './pages/payment-method/payment-method';
 import { Contact } from './pages/contact/contact';
 import { Profile } from './pages/profile/profile';
 import { Login } from './pages/login/login';
@@ -16,18 +19,19 @@ import { AdminBooking } from './pages/admin/admin-booking/admin-booking';
 import { AdminComplaints } from './pages/admin/admin-complaints/admin-complaints';
 import { DestinationComponent } from './pages/destinations/destinations';
 import { DestinationDetailsComponent } from './pages/destination-details/destination-details';
-
 import { ErrorPage } from './pages/error-page/error-page';
 
 export const routes: Routes = [
+
   {
     path: '',
     component: Home,
-    pathMatch:'full'
+    pathMatch: 'full'
   },
+
   {
     path: 'home',
-    component: Home,
+    component: Home
   },
 
   {
@@ -40,7 +44,6 @@ export const routes: Routes = [
     component: Services
   },
 
-
   {
     path: 'details/:id',
     component: Details
@@ -48,7 +51,17 @@ export const routes: Routes = [
 
   {
     path: 'book/:id',
-    component: Book
+    component: BookingComponent
+  },
+
+  {
+    path: 'payments/:id',
+    component: PaymentsComponent
+  },
+
+  {
+    path: 'payment-method/:id',
+    component: PaymentMethodComponent
   },
 
   {
@@ -100,7 +113,8 @@ export const routes: Routes = [
     path: 'admin/complaints',
     component: AdminComplaints
   },
-   {
+
+  {
     path: 'destinations',
     component: DestinationComponent,
     pathMatch: 'full'
@@ -115,5 +129,5 @@ export const routes: Routes = [
     path: '**',
     component: ErrorPage
   }
- 
+
 ];

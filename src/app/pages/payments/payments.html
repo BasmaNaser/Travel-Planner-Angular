@@ -1,0 +1,190 @@
+
+<div class="payment-page">
+
+  <!-- Loading -->
+  <div
+    class="loading-box"
+    *ngIf="isLoading"
+  >
+
+    <div class="spinner-border"></div>
+
+    <p>
+      Loading booking details...
+    </p>
+
+  </div>
+
+
+  <!-- Payment Page -->
+  <div
+    class="payment-container"
+    *ngIf="!isLoading"
+  >
+
+    <!-- Header -->
+    <div class="payment-header">
+
+      <h1>
+        Complete Your Payment
+      </h1>
+
+      <p>
+        Review your booking details and complete your payment.
+      </p>
+
+    </div>
+
+
+    <!-- Payment Card -->
+    <div class="payment-card">
+
+      <!-- Booking Details -->
+      <div class="booking-details">
+
+        <h2>
+          Booking Details
+        </h2>
+
+
+        <!-- Booking ID -->
+        <div class="detail-row">
+
+          <span>
+            Booking ID
+          </span>
+
+          <strong>
+            {{ booking?._id }}
+          </strong>
+
+        </div>
+
+
+        <!-- Travelers -->
+        <div class="detail-row">
+
+          <span>
+            Travelers
+          </span>
+
+          <strong>
+            {{ booking?.NumberOfPeople }}
+          </strong>
+
+        </div>
+
+
+        <!-- Start Date -->
+        <div class="detail-row">
+
+          <span>
+            Start Date
+          </span>
+
+          <strong>
+            {{ booking?.StartDate | date:'mediumDate' }}
+          </strong>
+
+        </div>
+
+
+        <!-- End Date -->
+        <div class="detail-row">
+
+          <span>
+            End Date
+          </span>
+
+          <strong>
+            {{ booking?.EndDate | date:'mediumDate' }}
+          </strong>
+
+        </div>
+
+
+        <!-- Status -->
+        <div class="detail-row">
+
+          <span>
+            Status
+          </span>
+
+          <strong
+            [class.pending]="booking?.Status === 'pending'"
+            [class.confirmed]="booking?.Status === 'confirmed'"
+          >
+            {{ booking?.Status }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- Payment Summary -->
+      <div class="payment-summary">
+
+        <h2>
+          Payment Summary
+        </h2>
+
+
+        <!-- Total Price -->
+        <div class="price-row">
+
+          <span>
+            Total Amount
+          </span>
+
+          <strong>
+            {{ booking?.PriceOf | number:'1.0-2' }}
+            EGP
+          </strong>
+
+        </div>
+
+
+
+        <!-- Pay Button -->
+        <button
+          type="button"
+          class="pay-btn"
+          (click)="payNow()"
+          [disabled]="
+            isPaying ||
+            booking?.Status !== 'pending'
+          "
+        >
+
+          <span *ngIf="!isPaying">
+            Pay Now
+          </span>
+
+          <span *ngIf="isPaying">
+            Processing...
+          </span>
+
+        </button>
+
+
+        <!-- Cancel -->
+        <button
+          type="button"
+          class="cancel-btn"
+          (click)="cancelPayment()"
+          [disabled]="isPaying"
+        >
+
+          Cancel
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+

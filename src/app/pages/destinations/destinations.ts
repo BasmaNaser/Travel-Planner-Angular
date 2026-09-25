@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Navbar } from '../../components/navbar/navbar';
 import { Footer } from '../../components/footer/footer';
+import Swal from 'sweetalert2';
 
 import { DestinationService } from '../../services/destination.service';
 import { Destination } from '../../Models/destination';
@@ -31,7 +32,7 @@ export class DestinationComponent implements OnInit {
   filteredDestinationsList: Destination[] = [];
   searchText: string = '';
   errorMessage: string = '';
-  isAdmin: boolean = true;
+  isAdmin: boolean = false;
   showForm: boolean = false;
   isEditMode: boolean = false;
   editId: string = '';
@@ -58,7 +59,35 @@ export class DestinationComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.checkUserRole();
     this.getDestinations();
+  }
+
+  checkUserRole(): void {
+    const token = localStorage.getItem('accessToken');
+
+    if (!token) {
+      this.isAdmin = false;
+      return;
+    }
+
+    try {
+      const payload = JSON.parse(
+        atob(
+          token.split('.')[1]
+            .replace(/-/g, '+')
+            .replace(/_/g, '/')
+        )
+      );
+
+      this.isAdmin = payload.role === 'admin';
+
+      console.log('User Role:', payload.role);
+      console.log('Is Admin:', this.isAdmin);
+    } catch (error) {
+      console.error('Invalid access token:', error);
+      this.isAdmin = false;
+    }
   }
 
   getDestinations(): void {
@@ -236,6 +265,16 @@ export class DestinationComponent implements OnInit {
           this.closeForm();
 
           this.getDestinations();
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Destination Added!',
+            text: 'Your destination has been added successfully.',
+            confirmButtonText: 'Great!',
+            confirmButtonColor: '#0a9c99',
+            timer: 2500,
+            timerProgressBar: true
+          });
         },
 
         error: (error) => {
@@ -247,6 +286,14 @@ export class DestinationComponent implements OnInit {
 
           this.errorMessage =
             'Failed to add destination.';
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Something went wrong',
+            text: 'The destination could not be added.',
+            confirmButtonText: 'Try Again',
+            confirmButtonColor: '#ef4444'
+          });
         }
       });
   }
@@ -288,6 +335,16 @@ export class DestinationComponent implements OnInit {
           this.closeForm();
 
           this.getDestinations();
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Destination Updated!',
+            text: 'Your destination has been updated successfully.',
+            confirmButtonText: 'Perfect!',
+            confirmButtonColor: '#0a9c99',
+            timer: 2500,
+            timerProgressBar: true
+          });
         },
 
         error: (error) => {
@@ -299,6 +356,14 @@ export class DestinationComponent implements OnInit {
 
           this.errorMessage =
             'Failed to update destination.';
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Update Failed',
+            text: 'The destination could not be updated.',
+            confirmButtonText: 'Try Again',
+            confirmButtonColor: '#ef4444'
+          });
         }
       });
   }
@@ -307,33 +372,59 @@ export class DestinationComponent implements OnInit {
     id: string
   ): void {
 
-    const confirmed =
-      confirm(
-        'Are you sure you want to delete this destination?'
-      );
+    Swal.fire({
+      title: 'Delete destination?',
+      text: 'This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#6b7280'
+    }).then((result) => {
 
-    if (!confirmed) {
-      return;
-    }
+      if (!result.isConfirmed) {
+        return;
+      }
 
-    this.destinationService
-      .deleteDestination(id)
-      .subscribe({
+      this.destinationService
+        .deleteDestination(id)
+        .subscribe({
 
-        next: () => {
-          this.getDestinations();
-        },
+          next: () => {
 
-        error: (error) => {
+            this.getDestinations();
 
-          console.error(
-            'Delete Error:',
-            error
-          );
+            Swal.fire({
+              icon: 'success',
+              title: 'Deleted!',
+              text: 'The destination has been deleted successfully.',
+              confirmButtonText: 'OK',
+              confirmButtonColor: '#0a9c99',
+              timer: 2500,
+              timerProgressBar: true
+            });
+          },
 
-          this.errorMessage =
-            'Failed to delete destination.';
-        }
-      });
+          error: (error) => {
+
+            console.error(
+              'Delete Error:',
+              error
+            );
+
+            this.errorMessage =
+              'Failed to delete destination.';
+
+            Swal.fire({
+              icon: 'error',
+              title: 'Delete Failed',
+              text: 'The destination could not be deleted.',
+              confirmButtonText: 'Try Again',
+              confirmButtonColor: '#ef4444'
+            });
+          }
+        });
+    });
   }
 }

@@ -54,11 +54,13 @@
         <section class="details-section">
 
           <div class="section-title">
+
             <i class="bi bi-info-circle-fill"></i>
 
             <h2>
               About Destination
             </h2>
+
           </div>
 
           <p class="description">
@@ -71,11 +73,13 @@
         <section class="details-section">
 
           <div class="section-title">
+
             <i class="bi bi-stars"></i>
 
             <h2>
               Things To Do
             </h2>
+
           </div>
 
           <div
@@ -124,6 +128,7 @@
 
           </div>
 
+
           <div class="price-box">
 
             <span>
@@ -136,15 +141,19 @@
 
           </div>
 
+
           <div class="info-list">
 
             <div class="info-row">
 
               <div class="info-icon">
+
                 <i class="bi bi-calendar3"></i>
+
               </div>
 
               <div>
+
                 <span>
                   Duration
                 </span>
@@ -152,25 +161,6 @@
                 <strong>
                   {{ destination.Duration }} Days
                 </strong>
-              </div>
-
-            </div>
-
-
-            <div class="info-row">
-
-              <div class="info-icon">
-                <i class="bi bi-people-fill"></i>
-              </div>
-
-              <div>
-                <span>
-                  Available Seats
-                </span>
-
-                <strong>
-                  {{ destination.AvailableSeats }}
-                </strong>
 
               </div>
 
@@ -180,10 +170,13 @@
             <div class="info-row">
 
               <div class="info-icon">
+
                 <i class="bi bi-clock-fill"></i>
+
               </div>
 
               <div>
+
                 <span>
                   Base Time
                 </span>
@@ -202,6 +195,7 @@
           <button
             type="button"
             class="book-btn"
+            (click)="tripNow()"
           >
 
             <span>
@@ -218,10 +212,6 @@
 
     </div>
 
-
-    <!-- =========================
-         Reviews
-    ========================== -->
 
     <section class="reviews-section">
 
@@ -268,7 +258,7 @@
             </div>
 
             <span>
-              {{ reviews.length }} traveler reviews
+              {{ getActiveReviewsCount() }} traveler reviews
             </span>
 
           </div>
@@ -320,150 +310,168 @@
           *ngFor="let review of reviews"
         >
 
-          <div class="review-user">
+          <ng-container
+            *ngIf="!review.isDeleted"
+          >
 
-            <div class="review-avatar">
-              <i class="bi bi-person-fill"></i>
+            <div class="review-user">
+
+              <div class="review-avatar">
+
+                <i class="bi bi-person-fill"></i>
+
+              </div>
+
+              <div class="review-user-info">
+
+                <strong>
+                  {{ review.UserID?.fullName || 'Traveler' }}
+                </strong>
+
+                <span>
+                  {{ getReviewDate(review) }}
+                </span>
+
+              </div>
+
             </div>
 
-            <div class="review-user-info">
 
-              <strong>
-                Traveler
-              </strong>
+            <div class="review-body">
 
-              <span>
-                {{ getReviewDate(review) }}
-              </span>
+              <div class="review-stars">
 
-            </div>
+                <i
+                  *ngFor="
+                    let star of getRatingStars(
+                      review.Rating
+                    )
+                  "
+                  class="bi"
+                  [class.bi-star-fill]="star"
+                  [class.bi-star]="!star"
+                ></i>
 
-          </div>
+              </div>
 
 
-          <div class="review-body">
-
-            <div class="review-stars">
-
-              <i
-                *ngFor="
-                  let star of getRatingStars(
-                    review.Rating
-                  )
+              <div
+                *ngIf="
+                  editingReviewId !== review._id
                 "
-                class="bi"
-                [class.bi-star-fill]="star"
-                [class.bi-star]="!star"
-              ></i>
+              >
 
-            </div>
-
-
-            <div
-              *ngIf="
-                editingReviewId !== review._id
-              "
-            >
-
-              <p class="review-text">
-                {{ review.Comment }}
-              </p>
+                <p class="review-text">
+                  {{ review.Comment }}
+                </p>
 
 
-              <div class="review-actions">
+                <div class="review-actions">
 
-                <button
-                  type="button"
-                  (click)="startEditReview(review)"
-                >
-                  Edit
-                </button>
-
-                <button
-                  type="button"
-                  (click)="deleteReview(review._id!)"
-                >
-                  Delete
-                </button>
-
-              </div>
-
-            </div>
-
-
-            <div
-              *ngIf="
-                editingReviewId === review._id
-              "
-              class="review-edit"
-            >
-
-              <div class="rating-input">
-
-                <button
-                  type="button"
-                  *ngFor="let star of [1,2,3,4,5]"
-                  (click)="editingRating = star"
-                >
-
-                  <i
-                    class="bi"
-                    [class.bi-star-fill]="
-                      star <= editingRating
+                  <button
+                    *ngIf="
+                      !isAdmin &&
+                      currentUserId === review.UserID?._id
                     "
-                    [class.bi-star]="
-                      star > editingRating
-                    "
-                  ></i>
+                    type="button"
+                    (click)="startEditReview(review)"
+                  >
+                    Edit
+                  </button>
 
-                </button>
+
+                  <button
+                    *ngIf="
+                      isAdmin ||
+                      currentUserId === review.UserID?._id
+                    "
+                    type="button"
+                    (click)="deleteReview(review._id!)"
+                  >
+                    Delete
+                  </button>
+
+                </div>
 
               </div>
 
 
-              <textarea
-                [(ngModel)]="editingComment"
-                rows="3"
-              ></textarea>
+              <div
+                *ngIf="
+                  editingReviewId === review._id
+                "
+                class="review-edit"
+              >
+
+                <div class="rating-input">
+
+                  <button
+                    type="button"
+                    *ngFor="let star of [1,2,3,4,5]"
+                    (click)="editingRating = star"
+                  >
+
+                    <i
+                      class="bi"
+                      [class.bi-star-fill]="
+                        star <= editingRating
+                      "
+                      [class.bi-star]="
+                        star > editingRating
+                      "
+                    ></i>
+
+                  </button>
+
+                </div>
 
 
-              <div class="edit-buttons">
+                <textarea
+                  [(ngModel)]="editingComment"
+                  rows="3"
+                ></textarea>
 
-                <button
-                  type="button"
-                  class="save-btn"
-                  (click)="updateReview()"
-                >
-                  Save
-                </button>
 
-                <button
-                  type="button"
-                  class="cancel-btn"
-                  (click)="cancelEdit()"
-                >
-                  Cancel
-                </button>
+                <div class="edit-buttons">
+
+                  <button
+                    type="button"
+                    class="save-btn"
+                    (click)="updateReview()"
+                  >
+                    Save
+                  </button>
+
+
+                  <button
+                    type="button"
+                    class="cancel-btn"
+                    (click)="cancelEdit()"
+                  >
+                    Cancel
+                  </button>
+
+                </div>
 
               </div>
 
             </div>
 
-          </div>
+          </ng-container>
 
         </div>
 
       </div>
 
 
-      <!-- Write Review -->
-
       <div class="write-review">
 
         <div class="write-review-title">
 
           <div class="write-icon">
+
             <i class="bi bi-pencil-square"></i>
+
           </div>
 
           <div>
@@ -548,6 +556,53 @@
     <i class="bi bi-exclamation-circle"></i>
 
     {{ errorMessage }}
+
+  </div>
+
+
+  <!-- DELETED REVIEW NOTIFICATION -->
+
+  <div
+    *ngIf="showDeletedReviewNotification"
+    class="deleted-review-toast"
+  >
+
+    <div class="deleted-review-toast-icon">
+
+      <i class="bi bi-exclamation-triangle-fill"></i>
+
+    </div>
+
+
+    <div class="deleted-review-toast-content">
+
+      <strong>
+        Review Removed
+      </strong>
+
+      <p>
+        Your review was removed by an administrator because it did not meet our community guidelines.
+      </p>
+
+      <button
+        type="button"
+        (click)="closeDeletedReviewNotification()"
+      >
+        OK
+      </button>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="deleted-review-close"
+      (click)="closeDeletedReviewNotification()"
+    >
+
+      <i class="bi bi-x"></i>
+
+    </button>
 
   </div>
 

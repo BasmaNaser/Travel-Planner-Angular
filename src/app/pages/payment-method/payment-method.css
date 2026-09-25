@@ -1,0 +1,276 @@
+.payment-method-page {
+  min-height: 100vh;
+  padding: 70px 20px;
+  background: #f8fafc;
+}
+
+.payment-method-container {
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+.payment-method-header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.payment-method-header h1 {
+  margin: 0 0 10px;
+  font-size: 36px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.payment-method-header p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+.payment-method-card {
+  background: #ffffff;
+  padding: 35px;
+  border-radius: 22px;
+  border: 1px solid #eef0f4;
+  box-shadow: 0 15px 45px rgba(15, 23, 42, 0.08);
+}
+
+.amount-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  margin-bottom: 30px;
+  background: #f8fafc;
+  border-radius: 14px;
+  border: 1px solid #eef0f4;
+}
+
+.amount-box span {
+  color: #6b7280;
+  font-size: 15px;
+}
+
+.amount-box strong {
+  color: #111827;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.payment-method-card h2 {
+  margin: 0 0 18px;
+  font-size: 21px;
+  color: #111827;
+}
+
+.methods {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.method-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 17px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #ffffff;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.method-card:hover {
+  border-color: #9ca3af;
+  transform: translateY(-1px);
+}
+
+.method-card.active {
+  border-color: #111827;
+  background: #f9fafb;
+  box-shadow: 0 5px 15px rgba(17, 24, 39, 0.06);
+}
+
+.method-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: #f3f4f6;
+  color: #111827;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.method-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.method-info strong {
+  color: #111827;
+  font-size: 15px;
+}
+
+.method-info span {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.selected-icon {
+  color: #111827;
+  font-size: 20px;
+}
+
+.payment-form {
+  margin-top: 25px;
+  padding: 24px;
+  border-radius: 15px;
+  background: #fafbfc;
+  border: 1px solid #eef0f4;
+}
+
+.payment-form h3 {
+  margin: 0 0 20px;
+  font-size: 18px;
+  color: #111827;
+}
+
+.form-group {
+  margin-bottom: 17px;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 7px;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.form-group input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px 14px;
+  border: 1px solid #dfe3e8;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #111827;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.form-group input:focus {
+  border-color: #111827;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.demo-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 22px;
+  padding: 14px 15px;
+  border-radius: 12px;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.demo-note i {
+  color: #2563eb;
+  font-size: 17px;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 0.7fr 1.3fr;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.back-btn,
+.confirm-btn {
+  padding: 14px 20px;
+  border-radius: 11px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.back-btn {
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #4b5563;
+}
+
+.back-btn:hover:not(:disabled) {
+  background: #f3f4f6;
+}
+
+.confirm-btn {
+  border: none;
+  background: #111827;
+  color: #ffffff;
+}
+
+.confirm-btn:hover:not(:disabled) {
+  background: #000000;
+  transform: translateY(-1px);
+}
+
+.back-btn:disabled,
+.confirm-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .payment-method-page {
+    padding: 35px 15px;
+  }
+
+  .payment-method-header h1 {
+    font-size: 28px;
+  }
+
+  .payment-method-card {
+    padding: 22px;
+    border-radius: 18px;
+  }
+
+  .amount-box {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .actions {
+    grid-template-columns: 1fr;
+  }
+}
