@@ -1,0 +1,217 @@
+<div class="payment-method-page">
+
+  <div class="payment-method-container">
+
+    <div class="payment-method-header">
+      <h1>Choose Payment Method</h1>
+      <p>Select your preferred payment method to complete your booking.</p>
+    </div>
+
+    <div class="payment-method-card">
+
+      <div class="amount-box">
+        <span>Total Amount</span>
+        <strong>
+          {{ booking?.PriceOf | number:'1.0-2' }} EGP
+        </strong>
+      </div>
+
+      <h2>Payment Method</h2>
+
+      <div class="methods">
+
+        <button
+          type="button"
+          class="method-card"
+          [class.active]="selectedMethod === 'card'"
+          (click)="selectMethod('card')"
+        >
+          <div class="method-icon">
+            <i class="bi bi-credit-card"></i>
+          </div>
+
+          <div class="method-info">
+            <strong>Credit / Debit Card</strong>
+            <span>Visa or Mastercard</span>
+          </div>
+
+          <i
+            class="bi bi-check-circle-fill selected-icon"
+            *ngIf="selectedMethod === 'card'"
+          ></i>
+        </button>
+
+        <button
+          type="button"
+          class="method-card"
+          [class.active]="selectedMethod === 'paypal'"
+          (click)="selectMethod('paypal')"
+        >
+          <div class="method-icon">
+            <i class="bi bi-paypal"></i>
+          </div>
+
+          <div class="method-info">
+            <strong>PayPal</strong>
+            <span>Pay securely with PayPal</span>
+          </div>
+
+          <i
+            class="bi bi-check-circle-fill selected-icon"
+            *ngIf="selectedMethod === 'paypal'"
+          ></i>
+        </button>
+
+        <button
+          type="button"
+          class="method-card"
+          [class.active]="selectedMethod === 'vodafone'"
+          (click)="selectMethod('vodafone')"
+        >
+          <div class="method-icon">
+            <i class="bi bi-phone"></i>
+          </div>
+
+          <div class="method-info">
+            <strong>Vodafone Cash</strong>
+            <span>Pay using your wallet</span>
+          </div>
+
+          <i
+            class="bi bi-check-circle-fill selected-icon"
+            *ngIf="selectedMethod === 'vodafone'"
+          ></i>
+        </button>
+
+      </div>
+
+      <div
+        class="payment-form"
+        *ngIf="selectedMethod === 'card'"
+      >
+
+        <h3>Card Details</h3>
+
+        <div class="form-group">
+          <label>Card Number</label>
+
+          <input
+            type="text"
+            [(ngModel)]="cardNumber"
+            placeholder="1234 5678 9012 3456"
+            maxlength="19"
+          >
+        </div>
+
+        <div class="form-group">
+          <label>Card Holder Name</label>
+
+          <input
+            type="text"
+            [(ngModel)]="cardName"
+            placeholder="Enter card holder name"
+          >
+        </div>
+
+        <div class="form-row">
+
+          <div class="form-group">
+            <label>Expiry Date</label>
+
+            <input
+              type="text"
+              [(ngModel)]="expiryDate"
+              placeholder="MM/YY"
+              maxlength="5"
+            >
+          </div>
+
+          <div class="form-group">
+            <label>CVV</label>
+
+            <input
+              type="password"
+              [(ngModel)]="cvv"
+              placeholder="123"
+              maxlength="4"
+            >
+          </div>
+
+        </div>
+
+      </div>
+
+      <div
+        class="payment-form"
+        *ngIf="selectedMethod === 'paypal'"
+      >
+
+        <h3>PayPal Details</h3>
+
+        <div class="form-group">
+          <label>PayPal Email</label>
+
+          <input
+            type="email"
+            [(ngModel)]="paypalEmail"
+            placeholder="example@email.com"
+          >
+        </div>
+
+      </div>
+
+      <div
+        class="payment-form"
+        *ngIf="selectedMethod === 'vodafone'"
+      >
+
+        <h3>Vodafone Cash</h3>
+
+        <div class="form-group">
+          <label>Wallet Number</label>
+
+          <input
+            type="tel"
+            [(ngModel)]="walletNumber"
+            placeholder="01XXXXXXXXX"
+            maxlength="11"
+          >
+        </div>
+
+      </div>
+
+    
+
+      <div class="actions">
+
+        <button
+          type="button"
+          class="back-btn"
+          (click)="goBack()"
+          [disabled]="isPaying"
+        >
+          Back
+        </button>
+
+        <button
+          type="button"
+          class="confirm-btn"
+          (click)="confirmPayment()"
+          [disabled]="isPaying"
+        >
+          <span *ngIf="!isPaying">
+            Confirm Payment
+          </span>
+
+          <span *ngIf="isPaying">
+            Processing...
+          </span>
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

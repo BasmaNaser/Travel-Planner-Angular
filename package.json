@@ -19,8 +19,9 @@
     "@angular/router": "^22.1.0",
     "bootstrap": "^5.3.8",
     "rxjs": "~7.8.0",
-    "socket.io-client": "^4.8.3",
-    "tslib": "^2.3.0"
+"socket.io-client": "^4.8.3",
+"sweetalert2": "^11.26.25",
+"tslib": "^2.3.0"
   },
   "devDependencies": {
     "@angular/build": "^22.1.8",
