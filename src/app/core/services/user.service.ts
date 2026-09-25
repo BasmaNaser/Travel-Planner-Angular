@@ -182,5 +182,8 @@ updateComplaintStatus(
     { status }
   );
 }
+getDestinations(): Observable<any> {
+  return this.http.get(`${environment.apiUrl}/destinations`);
+}
 
 }

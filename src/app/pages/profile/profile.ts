@@ -1,5 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+
+import {
+  Component,
+  inject,
+  OnInit
+} from '@angular/core';
+
 import {
   FormBuilder,
   ReactiveFormsModule,
@@ -8,7 +14,13 @@ import {
 
 import { Navbar } from '../../components/navbar/navbar';
 import { Footer } from '../../components/footer/footer';
+
 import { UserService } from '../../core/services/user.service';
+
+import {
+  BookingService,
+  MyBooking
+} from '../../services/booking.services';
 
 @Component({
   selector: 'app-profile',
@@ -26,8 +38,15 @@ export class Profile implements OnInit {
 
   private fb = inject(FormBuilder);
   private userService = inject(UserService);
-showImageModal = false;
-selectedImageUrl: string | null = null;
+  private bookingService = inject(BookingService);
+
+  // =========================
+  // PROFILE
+  // =========================
+
+  showImageModal = false;
+  selectedImageUrl: string | null = null;
+
   user: any = null;
 
   loading = true;
@@ -36,33 +55,60 @@ selectedImageUrl: string | null = null;
   errorMessage = '';
   successMessage = '';
 
+  // =========================
+  // PROFILE IMAGE
+  // =========================
+
   selectedImage: File | null = null;
   imagePreview: string | null = null;
 
   uploadingImage = false;
   deletingImage = false;
 
+  // =========================
+  // BOOKINGS
+  // =========================
+
+  bookings: MyBooking[] = [];
+
+  bookingsLoading = false;
+  bookingError = '';
+
+  // =========================
+  // PROFILE FORM
+  // =========================
+
   form = this.fb.group({
 
-    fullName: this.fb.nonNullable.control('', [
-      Validators.required,
-      Validators.pattern(
-        /^[a-zA-Z]{3,20}(( )[a-zA-Z]{3,20}){1,4}$/
-      )
-    ]),
+    fullName: this.fb.nonNullable.control(
+      '',
+      [
+        Validators.required,
+        Validators.pattern(
+          /^[a-zA-Z]{3,20}(( )[a-zA-Z]{3,20}){1,4}$/
+        )
+      ]
+    ),
 
     gender: this.fb.control<
       'Male' | 'Female' | 'Other' | undefined
     >(undefined),
 
-    about: this.fb.nonNullable.control('', [
-      Validators.maxLength(1000)
-    ]),
+    about: this.fb.nonNullable.control(
+      '',
+      [
+        Validators.maxLength(1000)
+      ]
+    ),
 
     userLocation: this.fb.nonNullable.control(''),
 
     dob: this.fb.nonNullable.control('')
   });
+
+  // =========================
+  // CHANGE PASSWORD
+  // =========================
 
   passwordForm = this.fb.nonNullable.group({
 
@@ -90,6 +136,7 @@ selectedImageUrl: string | null = null;
         Validators.required
       ]
     ]
+
   });
 
   showPasswordSection = false;
@@ -103,16 +150,30 @@ selectedImageUrl: string | null = null;
   passwordSuccessMessage = '';
   passwordErrorMessage = '';
 
+  currentPasswordIncorrect = false;
+
+  // =========================
+  // INIT
+  // =========================
+
   ngOnInit(): void {
     this.loadProfile();
+    this.loadBookings();
   }
 
+  // =========================
+  // LOAD PROFILE
+  // =========================
+
   loadProfile(): void {
+
     this.loading = true;
     this.errorMessage = '';
 
     this.userService.getProfile().subscribe({
+
       next: (response: any) => {
+
         this.loading = false;
 
         this.user = response?.data;
@@ -120,15 +181,21 @@ selectedImageUrl: string | null = null;
         this.patchForm();
       },
 
-      error: (error) => {
+      error: (error: any) => {
+
         this.loading = false;
 
         this.errorMessage =
           error?.error?.message ||
           'Unable to load profile.';
       }
+
     });
   }
+
+  // =========================
+  // PATCH PROFILE FORM
+  // =========================
 
   patchForm(): void {
 
@@ -138,19 +205,29 @@ selectedImageUrl: string | null = null;
 
     this.form.patchValue({
 
-      fullName: this.user.fullName || '',
+      fullName:
+        this.user.fullName || '',
 
-      gender: this.user.gender || undefined,
+      gender:
+        this.user.gender || undefined,
 
-      about: this.user.about || '',
+      about:
+        this.user.about || '',
 
-      userLocation: this.user.userLocation || '',
+      userLocation:
+        this.user.userLocation || '',
 
-      dob: this.user.dob
-        ? this.user.dob.substring(0, 10)
-        : ''
+      dob:
+        this.user.dob
+          ? this.user.dob.substring(0, 10)
+          : ''
+
     });
   }
+
+  // =========================
+  // EDIT PROFILE
+  // =========================
 
   enableEdit(): void {
 
@@ -159,19 +236,6 @@ selectedImageUrl: string | null = null;
     this.errorMessage = '';
     this.successMessage = '';
   }
-  openImage(imageUrl: string | null): void {
-  if (!imageUrl) {
-    return;
-  }
-
-  this.selectedImageUrl = imageUrl;
-  this.showImageModal = true;
-}
-
-closeImage(): void {
-  this.showImageModal = false;
-  this.selectedImageUrl = null;
-}
 
   cancelEdit(): void {
 
@@ -183,63 +247,114 @@ closeImage(): void {
     this.patchForm();
   }
 
+  // =========================
+  // UPDATE PROFILE
+  // =========================
+
   updateProfile(): void {
 
-  this.errorMessage = '';
-  this.successMessage = '';
+    this.errorMessage = '';
+    this.successMessage = '';
 
-  if (this.form.invalid) {
-    this.form.markAllAsTouched();
-    return;
-  }
+    if (this.form.invalid) {
 
-  const formValue = this.form.getRawValue();
+      this.form.markAllAsTouched();
 
-  const profileData = {
-    ...formValue,
-    gender: formValue.gender ?? undefined
-  };
-
-  this.userService
-    .updateProfile(profileData)
-    .subscribe({
-
-      next: (response: any) => {
-
-        this.user = response?.data || {
-          ...this.user,
-          ...formValue
-        };
-
-        this.editMode = false;
-
-        this.successMessage =
-          response?.message ||
-          'Profile updated successfully.';
-      },
-
-      error: (error) => {
-
-        this.errorMessage =
-          error?.error?.message ||
-          'Unable to update profile.';
-      }
-    });
-}
-
-  onImageSelected(event: Event): void {
-
-    const input = event.target as HTMLInputElement;
-
-    if (!input.files || input.files.length === 0) {
       return;
     }
 
-    const file = input.files[0];
+    const formValue =
+      this.form.getRawValue();
+
+    const profileData = {
+
+      ...formValue,
+
+      gender:
+        formValue.gender ?? undefined
+
+    };
+
+    this.userService
+      .updateProfile(profileData)
+      .subscribe({
+
+        next: (response: any) => {
+
+          this.user =
+            response?.data ||
+            {
+              ...this.user,
+              ...formValue
+            };
+
+          this.editMode = false;
+
+          this.successMessage =
+            response?.message ||
+            'Profile updated successfully.';
+        },
+
+        error: (error: any) => {
+
+          this.errorMessage =
+            error?.error?.message ||
+            'Unable to update profile.';
+        }
+
+      });
+  }
+
+  // =========================
+  // IMAGE MODAL
+  // =========================
+
+  openImage(
+    imageUrl: string | null
+  ): void {
+
+    if (!imageUrl) {
+      return;
+    }
+
+    this.selectedImageUrl =
+      imageUrl;
+
+    this.showImageModal = true;
+  }
+
+  closeImage(): void {
+
+    this.showImageModal = false;
+
+    this.selectedImageUrl = null;
+  }
+
+  // =========================
+  // SELECT IMAGE
+  // =========================
+
+  onImageSelected(
+    event: Event
+  ): void {
+
+    const input =
+      event.target as HTMLInputElement;
+
+    if (
+      !input.files ||
+      input.files.length === 0
+    ) {
+      return;
+    }
+
+    const file =
+      input.files[0];
 
     this.selectedImage = file;
 
-    const reader = new FileReader();
+    const reader =
+      new FileReader();
 
     reader.onload = () => {
 
@@ -249,6 +364,10 @@ closeImage(): void {
 
     reader.readAsDataURL(file);
   }
+
+  // =========================
+  // UPLOAD PROFILE PICTURE
+  // =========================
 
   uploadProfilePicture(): void {
 
@@ -262,14 +381,18 @@ closeImage(): void {
     this.successMessage = '';
 
     this.userService
-      .uploadProfilePicture(this.selectedImage)
+      .uploadProfilePicture(
+        this.selectedImage
+      )
       .subscribe({
 
         next: (response: any) => {
 
           this.uploadingImage = false;
 
-          this.user = response?.data || this.user;
+          this.user =
+            response?.data ||
+            this.user;
 
           this.selectedImage = null;
           this.imagePreview = null;
@@ -279,7 +402,7 @@ closeImage(): void {
             'Profile picture updated successfully.';
         },
 
-        error: (error) => {
+        error: (error: any) => {
 
           this.uploadingImage = false;
 
@@ -287,8 +410,13 @@ closeImage(): void {
             error?.error?.message ||
             'Unable to upload profile picture.';
         }
+
       });
   }
+
+  // =========================
+  // DELETE PROFILE PICTURE
+  // =========================
 
   deleteProfilePicture(): void {
 
@@ -317,7 +445,7 @@ closeImage(): void {
             'Profile picture deleted successfully.';
         },
 
-        error: (error) => {
+        error: (error: any) => {
 
           this.deletingImage = false;
 
@@ -325,14 +453,20 @@ closeImage(): void {
             error?.error?.message ||
             'Unable to delete profile picture.';
         }
+
       });
   }
 
+  // =========================
+  // DELETE ACCOUNT
+  // =========================
+
   deleteAccount(): void {
 
-    const confirmed = confirm(
-      'Are you sure you want to delete your account? This action cannot be undone.'
-    );
+    const confirmed =
+      confirm(
+        'Are you sure you want to delete your account? This action cannot be undone.'
+      );
 
     if (!confirmed) {
       return;
@@ -352,14 +486,19 @@ closeImage(): void {
             'Account deleted successfully.';
         },
 
-        error: (error) => {
+        error: (error: any) => {
 
           this.errorMessage =
             error?.error?.message ||
             'Unable to delete account.';
         }
+
       });
   }
+
+  // =========================
+  // PASSWORD SECTION
+  // =========================
 
   togglePasswordSection(): void {
 
@@ -369,7 +508,10 @@ closeImage(): void {
     this.passwordErrorMessage = '';
     this.passwordSuccessMessage = '';
 
+    this.currentPasswordIncorrect = false;
+
     if (!this.showPasswordSection) {
+
       this.resetPasswordForm();
     }
   }
@@ -381,6 +523,8 @@ closeImage(): void {
     this.passwordErrorMessage = '';
     this.passwordSuccessMessage = '';
 
+    this.currentPasswordIncorrect = false;
+
     this.resetPasswordForm();
   }
 
@@ -388,10 +532,16 @@ closeImage(): void {
 
     this.passwordForm.reset();
 
+    this.currentPasswordIncorrect = false;
+
     this.showCurrentPassword = false;
     this.showNewPassword = false;
     this.showConfirmPassword = false;
   }
+
+  // =========================
+  // PASSWORD VISIBILITY
+  // =========================
 
   toggleCurrentPassword(): void {
 
@@ -411,11 +561,18 @@ closeImage(): void {
       !this.showConfirmPassword;
   }
 
+  // =========================
+  // CHANGE PASSWORD
+  // =========================
+
   changePassword(): void {
 
     this.passwordErrorMessage = '';
     this.passwordSuccessMessage = '';
 
+    this.currentPasswordIncorrect = false;
+
+    // Frontend validation
     if (this.passwordForm.invalid) {
 
       this.passwordForm.markAllAsTouched();
@@ -423,13 +580,74 @@ closeImage(): void {
       return;
     }
 
+    const currentPassword =
+      this.passwordForm.controls
+        .currentPassword.value
+        .trim();
+
+    const newPassword =
+      this.passwordForm.controls
+        .newPassword.value;
+
+    const confirmPassword =
+      this.passwordForm.controls
+        .confirmPassword.value;
+
+    // Current password empty
+    if (!currentPassword) {
+
+      this.passwordErrorMessage =
+        'Please enter your current password.';
+
+      this.currentPassword.markAsTouched();
+
+      return;
+    }
+
+    // New password empty
+    if (!newPassword) {
+
+      this.passwordErrorMessage =
+        'Please enter a new password.';
+
+      this.newPassword.markAsTouched();
+
+      return;
+    }
+
+    // Confirm password empty
+    if (!confirmPassword) {
+
+      this.passwordErrorMessage =
+        'Please confirm your new password.';
+
+      this.confirmPassword.markAsTouched();
+
+      return;
+    }
+
+    // Password mismatch
     if (
-      this.passwordForm.controls.newPassword.value !==
-      this.passwordForm.controls.confirmPassword.value
+      newPassword !== confirmPassword
     ) {
 
       this.passwordErrorMessage =
         'New password and confirmation password do not match.';
+
+      this.confirmPassword.markAsTouched();
+
+      return;
+    }
+
+    // Same password
+    if (
+      currentPassword === newPassword
+    ) {
+
+      this.passwordErrorMessage =
+        'New password must be different from your current password.';
+
+      this.newPassword.markAsTouched();
 
       return;
     }
@@ -438,12 +656,15 @@ closeImage(): void {
 
     const passwordData = {
 
-      currentPassword:
-        this.passwordForm.controls.currentPassword.value,
+      currentPassword,
 
-      newPassword:
-        this.passwordForm.controls.newPassword.value
+      newPassword
+
     };
+
+    // IMPORTANT:
+    // Keep using the existing service method
+    // exactly as before.
 
     this.userService
       .changePassword(passwordData)
@@ -453,29 +674,252 @@ closeImage(): void {
 
           this.changingPassword = false;
 
+          this.passwordSuccessMessage =
+            response?.message ||
+            'Password changed successfully.';
+
           this.passwordForm.reset();
+
+          this.currentPasswordIncorrect = false;
 
           this.showCurrentPassword = false;
           this.showNewPassword = false;
           this.showConfirmPassword = false;
 
           this.showPasswordSection = false;
-
-          this.passwordSuccessMessage =
-            response?.message ||
-            'Password changed successfully.';
         },
 
-        error: (error) => {
+        error: (error: any) => {
 
           this.changingPassword = false;
 
-          this.passwordErrorMessage =
+          console.error(
+            'CHANGE PASSWORD ERROR:',
+            error
+          );
+
+          const message =
             error?.error?.message ||
+            error?.message ||
             'Unable to change password.';
+
+          /*
+           * Backend says current password is wrong.
+           */
+          if (
+            error?.status === 400 ||
+            error?.status === 401
+          ) {
+
+            this.currentPasswordIncorrect = true;
+
+            this.currentPassword.markAsTouched();
+
+            this.passwordErrorMessage =
+              'Current password is incorrect.';
+
+            return;
+          }
+
+          this.passwordErrorMessage =
+            message;
         }
+
       });
   }
+
+  // =========================
+  // BOOKINGS
+  // =========================
+
+  loadBookings(): void {
+
+    this.bookingsLoading = true;
+
+    this.bookingError = '';
+
+    this.bookingService
+      .getMyBookings()
+      .subscribe({
+
+        next: (response: any) => {
+
+          console.log(
+            'MY BOOKINGS:',
+            response
+          );
+
+          this.bookings =
+            response?.data ?? [];
+
+          this.bookingsLoading = false;
+        },
+
+        error: (error: any) => {
+
+          console.error(
+            'GET MY BOOKINGS ERROR:',
+            error
+          );
+
+          this.bookings = [];
+
+          this.bookingError =
+            error?.error?.message ||
+            'Unable to load your bookings.';
+
+          this.bookingsLoading = false;
+        }
+
+      });
+  }
+
+  // =========================
+  // BOOKING DESTINATION
+  // =========================
+
+  getBookingDestination(
+    booking: MyBooking
+  ): any {
+
+    return (
+      booking?.ItineraryDayID
+        ?.DestinationID ??
+      {}
+    );
+  }
+
+  // =========================
+  // BOOKING STATUS CLASS
+  // =========================
+
+  getBookingStatusClass(
+    status: string
+  ): string {
+
+    switch (
+      (status || '').toLowerCase()
+    ) {
+
+      case 'confirmed':
+
+        return 'booking-status confirmed';
+
+      case 'completed':
+
+        return 'booking-status completed';
+
+      case 'cancelled':
+
+        return 'booking-status cancelled';
+
+      case 'pending':
+      default:
+
+        return 'booking-status pending';
+    }
+  }
+
+  // =========================
+  // BOOKING STATUS ICON
+  // =========================
+
+  getBookingStatusIcon(
+    status: string
+  ): string {
+
+    switch (
+      (status || '').toLowerCase()
+    ) {
+
+      case 'confirmed':
+
+        return 'bi-check-circle-fill';
+
+      case 'completed':
+
+        return 'bi-check2-all';
+
+      case 'cancelled':
+
+        return 'bi-x-circle-fill';
+
+      case 'pending':
+      default:
+
+        return 'bi-clock-fill';
+    }
+  }
+
+  // =========================
+  // BOOKING STATUS TEXT
+  // =========================
+
+  getBookingStatusText(
+    status: string
+  ): string {
+
+    switch (
+      (status || '').toLowerCase()
+    ) {
+
+      case 'confirmed':
+
+        return 'Confirmed';
+
+      case 'completed':
+
+        return 'Completed';
+
+      case 'cancelled':
+
+        return 'Cancelled';
+
+      case 'pending':
+      default:
+
+        return 'Pending';
+    }
+  }
+
+  // =========================
+  // BOOKING IMAGE
+  // =========================
+
+  getBookingImage(
+    booking: MyBooking
+  ): string {
+
+    const destination =
+      this.getBookingDestination(
+        booking
+      );
+
+    const image =
+      destination?.Image || '';
+
+    if (!image) {
+
+      return 'assets/images/destination-placeholder.jpg';
+    }
+
+    if (
+      image.startsWith('http')
+    ) {
+
+      return image;
+    }
+
+    return `http://localhost:5000${
+      image.startsWith('/')
+        ? ''
+        : '/'
+    }${image}`;
+  }
+
+  // =========================
+  // FORM GETTERS
+  // =========================
 
   get fullName() {
     return this.form.controls.fullName;

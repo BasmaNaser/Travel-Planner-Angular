@@ -1,17 +1,12 @@
 <app-navbar></app-navbar>
 
 <div class="top">
-  <div class="container py-5 ">
+  <main class="container py-5">
 
-  <div class="text-center mb-5 ">
-    <h2 class="fw-bold">My Profile</h2>
+  <!-- ========================= -->
+  <!-- LOADING -->
+  <!-- ========================= -->
 
-    <p class="text-muted">
-      Manage your personal information and account details.
-    </p>
-  </div>
-
-  <!-- Loading -->
   <div
     *ngIf="loading"
     class="text-center py-5"
@@ -21,133 +16,269 @@
       role="status"
     ></div>
 
-    <p class="text-muted mt-3">
+    <p class="text-muted mt-3 mb-0">
       Loading profile...
     </p>
   </div>
 
-  <!-- Error -->
+
+  <!-- ========================= -->
+  <!-- ERROR -->
+  <!-- ========================= -->
+
   <div
     *ngIf="!loading && errorMessage"
     class="alert alert-danger"
   >
+    <i class="bi bi-exclamation-circle me-2"></i>
+
     {{ errorMessage }}
   </div>
 
+
+  <!-- ========================= -->
+  <!-- PROFILE -->
+  <!-- ========================= -->
+
   <div
     *ngIf="!loading && user"
-    class="row g-4"
+    class="profile-page"
   >
 
-    <!-- Profile Picture -->
-    <div class="col-lg-4">
+    <!-- ========================= -->
+    <!-- PROFILE HEADER -->
+    <!-- ========================= -->
 
-      <div class="card border-0 shadow-sm rounded-4">
+    <div
+      class="card border-0 shadow-sm rounded-4 mb-4"
+    >
 
-        <div class="card-body text-center p-4">
+      <div class="card-body p-4 p-md-5">
 
-          <!-- Image -->
-          <div class="mb-4">
+        <div
+          class="row align-items-center g-4"
+        >
 
-            <!-- Preview -->
-           <img
-  *ngIf="imagePreview"
-  [src]="imagePreview"
-  alt="Profile Preview"
-  class="rounded-circle profile-image clickable-image"
-  (click)="openImage(imagePreview)"
->
+          <!-- PROFILE IMAGE -->
 
-            <!-- Existing Image -->
-            <img
-  *ngIf="!imagePreview && user.profilePicture"
-  [src]="user.profilePicture"
-  alt="Profile Picture"
-  class="rounded-circle profile-image clickable-image"
-  (click)="openImage(user.profilePicture)"
->
-            <!-- Default Image -->
+          <div
+            class="col-md-4 text-center"
+          >
+
             <div
-              *ngIf="!imagePreview && !user.profilePicture"
-              class="rounded-circle profile-placeholder mx-auto"
+              class="profile-image-wrapper mx-auto"
             >
-              <i class="bi bi-person"></i>
+
+              <!-- Preview -->
+
+              <img
+                *ngIf="imagePreview"
+                [src]="imagePreview"
+                class="profile-image"
+                alt="Profile Preview"
+              />
+
+              <!-- Existing Image -->
+
+              <img
+                *ngIf="
+                  !imagePreview &&
+                  user?.profilePicture
+                "
+                [src]="user.profilePicture"
+                class="profile-image"
+                alt="Profile Picture"
+                (click)="
+                  openImage(
+                    user.profilePicture
+                  )
+                "
+              />
+
+              <!-- Placeholder -->
+
+              <div
+                *ngIf="
+                  !imagePreview &&
+                  !user?.profilePicture
+                "
+                class="profile-image-placeholder"
+              >
+                <i class="bi bi-person"></i>
+              </div>
+
+            </div>
+
+
+            <!-- IMAGE ACTIONS -->
+
+            <div
+              class="profile-image-actions mt-3"
+            >
+
+              <label
+                class="btn btn-outline-primary btn-sm"
+              >
+
+                <i
+                  class="bi bi-camera me-1"
+                ></i>
+
+                Choose Photo
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  (change)="
+                    onImageSelected($event)
+                  "
+                />
+
+              </label>
+
+
+              <button
+                *ngIf="selectedImage"
+                type="button"
+                class="btn btn-primary btn-sm"
+                [disabled]="uploadingImage"
+                (click)="
+                  uploadProfilePicture()
+                "
+              >
+
+                <span
+                  *ngIf="uploadingImage"
+                  class="spinner-border spinner-border-sm me-1"
+                ></span>
+
+                {{
+                  uploadingImage
+                    ? 'Uploading...'
+                    : 'Upload'
+                }}
+
+              </button>
+
+
+              <button
+                *ngIf="user?.profilePicture"
+                type="button"
+                class="btn btn-outline-danger btn-sm"
+                [disabled]="deletingImage"
+                (click)="
+                  deleteProfilePicture()
+                "
+              >
+
+                <span
+                  *ngIf="deletingImage"
+                  class="spinner-border spinner-border-sm me-1"
+                ></span>
+
+                <i
+                  *ngIf="!deletingImage"
+                  class="bi bi-trash me-1"
+                ></i>
+
+                {{
+                  deletingImage
+                    ? 'Deleting...'
+                    : 'Delete'
+                }}
+
+              </button>
+
             </div>
 
           </div>
 
-          <h5 class="fw-bold mb-1">
-            {{ user.fullName }}
-          </h5>
 
-          <p class="text-muted mb-4">
-            {{ user.email }}
-          </p>
+          <!-- PROFILE INFO -->
 
-          <!-- Choose Picture -->
-          <div class="mb-3">
+          <div class="col-md-8">
 
-            <label
-              for="profileImage"
-              class="btn btn-outline-primary w-100"
+            <div
+              class="d-flex justify-content-between align-items-start flex-wrap gap-3"
             >
-              <i class="bi bi-camera me-2"></i>
-              Choose Picture
-            </label>
 
-            <input
-              id="profileImage"
-              type="file"
-              class="d-none"
-              accept="image/*"
-              (change)="onImageSelected($event)"
+              <div>
+
+                <h2
+                  class="fw-bold mb-1"
+                >
+                  {{ user?.fullName || 'User' }}
+                </h2>
+
+                <p
+                  class="text-muted mb-2"
+                >
+                  <i
+                    class="bi bi-envelope me-2"
+                  ></i>
+
+                  {{ user?.email || '—' }}
+                </p>
+
+                <p
+                  class="text-muted mb-0"
+                  *ngIf="user?.userLocation"
+                >
+                  <i
+                    class="bi bi-geo-alt me-2"
+                  ></i>
+
+                  {{ user.userLocation }}
+                </p>
+
+              </div>
+
+
+              <button
+                *ngIf="!editMode"
+                type="button"
+                class="btn btn-primary"
+                (click)="enableEdit()"
+              >
+
+                <i
+                  class="bi bi-pencil me-1"
+                ></i>
+
+                Edit Profile
+
+              </button>
+
+            </div>
+
+
+            <!-- ABOUT -->
+
+            <div
+              class="profile-mini-card mt-4"
+              *ngIf="user?.about"
             >
+
+              <h6
+                class="fw-bold mb-2"
+              >
+                <i
+                  class="bi bi-person-lines-fill me-2"
+                ></i>
+
+                About
+              </h6>
+
+              <p
+                class="text-muted mb-0"
+              >
+                {{ user.about }}
+              </p>
+
+            </div>
 
           </div>
-
-          <!-- Upload Picture -->
-          <button
-            *ngIf="selectedImage"
-            type="button"
-            class="btn btn-primary w-100 mb-2"
-            [disabled]="uploadingImage"
-            (click)="uploadProfilePicture()"
-          >
-
-            <span
-              *ngIf="uploadingImage"
-              class="spinner-border spinner-border-sm me-2"
-            ></span>
-
-            {{
-              uploadingImage
-                ? 'Uploading...'
-                : 'Upload Picture'
-            }}
-
-          </button>
-
-          <!-- Delete Picture -->
-          <button
-            *ngIf="user.profilePicture"
-            type="button"
-            class="btn btn-outline-danger w-100"
-            [disabled]="deletingImage"
-            (click)="deleteProfilePicture()"
-          >
-
-            <span
-              *ngIf="deletingImage"
-              class="spinner-border spinner-border-sm me-2"
-            ></span>
-
-            {{
-              deletingImage
-                ? 'Deleting...'
-                : 'Delete Picture'
-            }}
-
-          </button>
 
         </div>
 
@@ -156,136 +287,177 @@
     </div>
 
 
-    <!-- Profile Information -->
-    <div class="col-lg-8">
+    <!-- ========================= -->
+    <!-- ALERTS -->
+    <!-- ========================= -->
 
-      <div class="card border-0 shadow-sm rounded-4">
+    <div
+      *ngIf="successMessage"
+      class="alert alert-success"
+    >
 
-        <div class="card-body p-4 p-md-5">
+      <i
+        class="bi bi-check-circle me-2"
+      ></i>
 
-          <!-- Header -->
-          <div
-            class="d-flex justify-content-between align-items-center mb-4"
-          >
+      {{ successMessage }}
 
-            <div>
-              <h4 class="fw-bold mb-1">
-                Personal Information
-              </h4>
+    </div>
 
-              <p class="text-muted mb-0">
-                Update your personal information.
-              </p>
-            </div>
 
-            <!-- Edit -->
-            <button
-              *ngIf="!editMode"
-              type="button"
-              class="btn btn-primary"
-              (click)="enableEdit()"
+    <div
+      *ngIf="errorMessage"
+      class="alert alert-danger"
+    >
+
+      <i
+        class="bi bi-exclamation-circle me-2"
+      ></i>
+
+      {{ errorMessage }}
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- PERSONAL INFORMATION -->
+    <!-- ========================= -->
+
+    <div
+      class="card border-0 shadow-sm rounded-4 mb-4"
+    >
+
+      <div
+        class="card-body p-4 p-md-5"
+      >
+
+        <div
+          class="d-flex justify-content-between align-items-center mb-4"
+        >
+
+          <div>
+
+            <h4
+              class="fw-bold mb-1"
             >
-              <i class="bi bi-pencil me-2"></i>
-              Edit
-            </button>
+              <i
+                class="bi bi-person-vcard me-2"
+              ></i>
+
+              Personal Information
+            </h4>
+
+            <p
+              class="text-muted mb-0"
+            >
+              Manage your personal information.
+            </p>
 
           </div>
 
-
-          <!-- Success Message -->
-          <div
-            *ngIf="successMessage"
-            class="alert alert-success"
-          >
-            {{ successMessage }}
-          </div>
+        </div>
 
 
-          <!-- Error Message -->
-          <div
-            *ngIf="errorMessage"
-            class="alert alert-danger"
-          >
-            {{ errorMessage }}
-          </div>
+        <form
+          [formGroup]="form"
+          (ngSubmit)="updateProfile()"
+        >
 
+          <div class="row g-4">
 
-          <!-- Profile Form -->
-          <form
-            [formGroup]="form"
-            (ngSubmit)="updateProfile()"
-          >
+            <!-- FULL NAME -->
 
-            <!-- Full Name -->
-            <div class="mb-3">
+            <div class="col-md-6">
 
               <label
-                for="fullName"
                 class="form-label fw-semibold"
               >
                 Full Name
               </label>
 
               <input
-                id="fullName"
                 type="text"
                 class="form-control"
                 formControlName="fullName"
                 [readonly]="!editMode"
-              >
+                [class.is-invalid]="
+                  fullName.invalid &&
+                  fullName.touched
+                "
+              />
 
               <div
-                *ngIf="fullName.touched && fullName.invalid"
-                class="text-danger small mt-1"
+                *ngIf="
+                  fullName.invalid &&
+                  fullName.touched
+                "
+                class="invalid-feedback"
               >
 
-                <span
-                  *ngIf="fullName.errors?.['required']"
-                >
-                  Full name is required.
-                </span>
-
-                <span
-                  *ngIf="fullName.errors?.['pattern']"
-                >
-                  Enter a valid full name.
-                </span>
+                Please enter a valid full name.
 
               </div>
 
             </div>
 
 
-            <!-- Gender -->
-            <div class="mb-3">
+            <!-- EMAIL -->
+
+            <div class="col-md-6">
 
               <label
-                for="gender"
+                class="form-label fw-semibold"
+              >
+                Email
+              </label>
+
+              <input
+                type="email"
+                class="form-control"
+                [value]="user?.email || ''"
+                readonly
+              />
+
+            </div>
+
+
+            <!-- GENDER -->
+
+            <div class="col-md-6">
+
+              <label
                 class="form-label fw-semibold"
               >
                 Gender
               </label>
 
               <select
-                id="gender"
                 class="form-select"
                 formControlName="gender"
                 [disabled]="!editMode"
               >
 
-                <option [ngValue]="undefined">
-                  Select Gender
+                <option
+                  [ngValue]="undefined"
+                >
+                  Select gender
                 </option>
 
-                <option value="Male">
+                <option
+                  value="Male"
+                >
                   Male
                 </option>
 
-                <option value="Female">
+                <option
+                  value="Female"
+                >
                   Female
                 </option>
 
-                <option value="Other">
+                <option
+                  value="Other"
+                >
                   Other
                 </option>
 
@@ -294,349 +466,770 @@
             </div>
 
 
-            <!-- Date of Birth -->
-            <div class="mb-3">
+            <!-- DATE OF BIRTH -->
+
+            <div class="col-md-6">
 
               <label
-                for="dob"
                 class="form-label fw-semibold"
               >
                 Date of Birth
               </label>
 
               <input
-                id="dob"
                 type="date"
                 class="form-control"
                 formControlName="dob"
                 [readonly]="!editMode"
-              >
+              />
 
             </div>
 
 
-            <!-- Location -->
-            <div class="mb-3">
+            <!-- LOCATION -->
+
+            <div class="col-md-6">
 
               <label
-                for="userLocation"
                 class="form-label fw-semibold"
               >
                 Location
               </label>
 
               <input
-                id="userLocation"
                 type="text"
                 class="form-control"
                 formControlName="userLocation"
                 [readonly]="!editMode"
-                placeholder="Enter your location"
-              >
+              />
 
             </div>
 
 
-            <!-- About -->
-            <div class="mb-4">
+            <!-- ABOUT -->
+
+            <div class="col-12">
 
               <label
-                for="about"
                 class="form-label fw-semibold"
               >
                 About
               </label>
 
               <textarea
-                id="about"
-                rows="5"
                 class="form-control"
+                rows="5"
                 formControlName="about"
                 [readonly]="!editMode"
-                placeholder="Tell us something about yourself..."
               ></textarea>
 
               <div
-                *ngIf="
-                  about.touched &&
-                  about.errors?.['maxlength']
-                "
-                class="text-danger small mt-1"
+                class="text-muted small mt-1"
               >
-                About cannot exceed 1000 characters.
+                Maximum 1000 characters.
               </div>
 
             </div>
 
+          </div>
 
-            <!-- Save / Cancel -->
-            <div
-              *ngIf="editMode"
-              class="d-flex gap-2"
+
+          <!-- EDIT BUTTONS -->
+
+          <div
+            *ngIf="editMode"
+            class="d-flex gap-2 mt-4"
+          >
+
+            <button
+              type="submit"
+              class="btn btn-primary"
             >
 
-              <button
-                type="submit"
-                class="btn btn-primary"
-              >
-                <i class="bi bi-check-lg me-2"></i>
-                Save Changes
-              </button>
+              <i
+                class="bi bi-check-lg me-1"
+              ></i>
 
-              <button
-                type="button"
-                class="btn btn-outline-secondary"
-                (click)="cancelEdit()"
+              Save Changes
+
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="cancelEdit()"
+            >
+
+              Cancel
+
+            </button>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- MY BOOKINGS -->
+    <!-- ========================= -->
+
+    <div
+      class="card border-0 shadow-sm rounded-4 mb-4"
+    >
+
+      <div
+        class="card-body p-4 p-md-5"
+      >
+
+        <div
+          class="section-header mb-4"
+        >
+
+          <div>
+
+            <h4
+              class="fw-bold mb-1"
+            >
+
+              <i
+                class="bi bi-calendar-check me-2"
+              ></i>
+
+              My Bookings
+
+            </h4>
+
+            <p
+              class="text-muted mb-0"
+            >
+              View your booking history.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- BOOKINGS LOADING -->
+
+        <div
+          *ngIf="bookingsLoading"
+          class="text-center py-4"
+        >
+
+          <div
+            class="spinner-border text-primary"
+          ></div>
+
+          <p
+            class="text-muted mt-2 mb-0"
+          >
+            Loading bookings...
+          </p>
+
+        </div>
+
+
+        <!-- BOOKING ERROR -->
+
+        <div
+          *ngIf="!bookingsLoading && bookingError"
+          class="alert alert-danger"
+        >
+
+          <i
+            class="bi bi-exclamation-circle me-2"
+          ></i>
+
+          {{ bookingError }}
+
+        </div>
+
+
+        <!-- NO BOOKINGS -->
+
+        <div
+          *ngIf="
+            !bookingsLoading &&
+            !bookingError &&
+            bookings.length === 0
+          "
+          class="text-center py-5"
+        >
+
+          <i
+            class="bi bi-calendar-x display-5 text-muted"
+          ></i>
+
+          <h5
+            class="fw-bold mt-3"
+          >
+            No Bookings Yet
+          </h5>
+
+          <p
+            class="text-muted mb-0"
+          >
+            You don't have any bookings yet.
+          </p>
+
+        </div>
+
+
+        <!-- BOOKINGS -->
+
+        <div
+          *ngIf="
+            !bookingsLoading &&
+            bookings.length > 0
+          "
+          class="row g-4"
+        >
+
+          <div
+            *ngFor="let booking of bookings"
+            class="col-md-6"
+          >
+
+            <div
+              class="booking-card h-100"
+            >
+
+              <!-- IMAGE -->
+
+              <img
+                [src]="getBookingImage(booking)"
+                class="booking-image"
+                alt="Destination"
+              />
+
+
+              <div
+                class="booking-content"
               >
-                Cancel
-              </button>
+
+                <div
+                  class="d-flex justify-content-between align-items-start gap-2"
+                >
+
+                  <div>
+
+                    <h5
+                      class="fw-bold mb-1"
+                    >
+                      {{
+                        getBookingDestination(
+                          booking
+                        )?.Name ||
+                        'Destination'
+                      }}
+                    </h5>
+
+                    <p
+                      class="text-muted small mb-0"
+                    >
+                      Booking ID:
+                      {{
+                        booking?._id ||
+                        '—'
+                      }}
+                    </p>
+
+                  </div>
+
+
+                  <span
+                    [class]="
+                      getBookingStatusClass(
+                        booking?.Status
+                      )
+                    "
+                  >
+
+                    <i
+                      class="bi me-1"
+                      [ngClass]="
+                        getBookingStatusIcon(
+                          booking?.Status
+                        )
+                      "
+                    ></i>
+
+                    {{
+                      getBookingStatusText(
+                        booking?.Status
+                      )
+                    }}
+
+                  </span>
+
+                </div>
+
+
+               <div class="booking-content">
+
+  <div
+    class="d-flex justify-content-between align-items-start gap-2"
+  >
+
+    <div>
+
+      <h5 class="fw-bold mb-1">
+        {{
+          getBookingDestination(booking)?.Name ||
+          'Destination'
+        }}
+      </h5>
+
+      <p class="text-muted small mb-0">
+        Booking ID:
+        {{
+          booking?._id || '—'
+        }}
+      </p>
+
+    </div>
+
+    <span
+      [class]="
+        getBookingStatusClass(
+          booking?.Status
+        )
+      "
+    >
+
+      <i
+        class="bi me-1"
+        [ngClass]="
+          getBookingStatusIcon(
+            booking?.Status
+          )
+        "
+      ></i>
+
+      {{
+        getBookingStatusText(
+          booking?.Status
+        )
+      }}
+
+    </span>
+
+  </div>
+
+
+  <div class="mt-3">
+
+  <p
+    class="mb-0"
+    *ngIf="booking?.StartDate"
+  >
+
+    <i class="bi bi-calendar3 me-2"></i>
+
+    {{
+      booking.StartDate
+        | date:'mediumDate'
+    }}
+
+  </p>
+
+</div>
+
+</div>
+
+              </div>
 
             </div>
 
-          </form>
+          </div>
 
         </div>
 
       </div>
 
+    </div>
 
-      <!-- Change Password -->
-      <div class="card border-0 shadow-sm rounded-4 mt-4">
 
-        <div class="card-body p-4 p-md-5">
+    <!-- ========================= -->
+    <!-- CHANGE PASSWORD -->
+    <!-- ========================= -->
 
-          <div
-            class="d-flex justify-content-between align-items-center"
-          >
+    <div
+      class="card border-0 shadow-sm rounded-4 mb-4"
+    >
 
-            <div>
-              <h4 class="fw-bold mb-1">
-                Password
-              </h4>
+      <div
+        class="card-body p-4 p-md-5"
+      >
 
-              <p class="text-muted mb-0">
-                Change your account password.
-              </p>
-            </div>
+        <div
+          class="d-flex justify-content-between align-items-center"
+        >
 
-            <button
-              *ngIf="!showPasswordSection"
-              type="button"
-              class="btn btn-outline-primary"
-              (click)="togglePasswordSection()"
+          <div>
+
+            <h4
+              class="fw-bold mb-1"
             >
+
+              <i
+                class="bi bi-shield-lock me-2"
+              ></i>
+
               Change Password
-            </button>
+
+            </h4>
+
+            <p
+              class="text-muted mb-0"
+            >
+              Update your account password.
+            </p>
 
           </div>
 
 
-          <!-- Password Success -->
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            (click)="togglePasswordSection()"
+          >
+
+            <i
+              class="bi"
+              [ngClass]="
+                showPasswordSection
+                  ? 'bi-chevron-up'
+                  : 'bi-lock'
+              "
+            ></i>
+
+            {{
+              showPasswordSection
+                ? 'Hide'
+                : 'Change Password'
+            }}
+
+          </button>
+
+        </div>
+
+
+        <!-- PASSWORD FORM -->
+
+        <div
+          *ngIf="showPasswordSection"
+          class="mt-4"
+        >
+
+          <!-- SUCCESS -->
+
           <div
             *ngIf="passwordSuccessMessage"
-            class="alert alert-success mt-4"
+            class="alert alert-success"
           >
+
+            <i
+              class="bi bi-check-circle me-2"
+            ></i>
+
             {{ passwordSuccessMessage }}
+
           </div>
 
 
-          <!-- Password Form -->
-          <form
-            *ngIf="showPasswordSection"
-            [formGroup]="passwordForm"
-            (ngSubmit)="changePassword()"
-            class="mt-4"
+          <!-- ERROR -->
+
+          <div
+            *ngIf="
+              passwordErrorMessage &&
+              !currentPasswordIncorrect
+            "
+            class="alert alert-danger"
           >
 
-            <!-- Current Password -->
-            <div class="mb-3">
+            <i
+              class="bi bi-exclamation-circle me-2"
+            ></i>
 
-              <label
-                for="currentPassword"
-                class="form-label fw-semibold"
-              >
-                Current Password
-              </label>
+            {{ passwordErrorMessage }}
 
-              <div class="input-group">
+          </div>
 
-                <input
-                  id="currentPassword"
-                  [type]="
-                    showCurrentPassword
-                      ? 'text'
-                      : 'password'
-                  "
-                  class="form-control"
-                  formControlName="currentPassword"
+
+          <form
+            [formGroup]="passwordForm"
+            (ngSubmit)="changePassword()"
+          >
+
+            <div class="row g-4">
+
+              <!-- CURRENT PASSWORD -->
+
+              <div class="col-12">
+
+                <label
+                  class="form-label fw-semibold"
                 >
+                  Current Password
+                </label>
 
-                <button
-                  type="button"
-                  class="btn btn-outline-secondary"
-                  (click)="toggleCurrentPassword()"
-                >
 
-                  <i
-                    [class]="
+                <div class="input-group">
+
+                  <input
+                    [type]="
                       showCurrentPassword
-                        ? 'bi bi-eye-slash'
-                        : 'bi bi-eye'
+                        ? 'text'
+                        : 'password'
                     "
-                  ></i>
+                    class="form-control"
+                    formControlName="currentPassword"
 
-                </button>
-
-              </div>
-
-              <div
-                *ngIf="
-                  currentPassword.touched &&
-                  currentPassword.invalid
-                "
-                class="text-danger small mt-1"
-              >
-                Current password is required.
-              </div>
-
-            </div>
-
-
-            <!-- New Password -->
-            <div class="mb-3">
-
-              <label
-                for="newPassword"
-                class="form-label fw-semibold"
-              >
-                New Password
-              </label>
-
-              <div class="input-group">
-
-                <input
-                  id="newPassword"
-                  [type]="
-                    showNewPassword
-                      ? 'text'
-                      : 'password'
-                  "
-                  class="form-control"
-                  formControlName="newPassword"
-                >
-
-                <button
-                  type="button"
-                  class="btn btn-outline-secondary"
-                  (click)="toggleNewPassword()"
-                >
-
-                  <i
-                    [class]="
-                      showNewPassword
-                        ? 'bi bi-eye-slash'
-                        : 'bi bi-eye'
+                    [class.is-invalid]="
+                      (
+                        currentPassword.invalid &&
+                        currentPassword.touched
+                      ) ||
+                      currentPasswordIncorrect
                     "
-                  ></i>
 
-                </button>
+                    (input)="
+                      currentPasswordIncorrect = false;
+                      passwordErrorMessage = ''
+                    "
+                  />
 
-              </div>
 
-              <div
-                *ngIf="
-                  newPassword.touched &&
-                  newPassword.invalid
-                "
-                class="text-danger small mt-1"
-              >
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="
+                      toggleCurrentPassword()
+                    "
+                  >
 
-                <span
-                  *ngIf="newPassword.errors?.['required']"
-                >
-                  New password is required.
-                </span>
+                    <i
+                      class="bi"
+                      [ngClass]="
+                        showCurrentPassword
+                          ? 'bi-eye-slash'
+                          : 'bi-eye'
+                      "
+                    ></i>
 
-                <span
+                  </button>
+
+                </div>
+
+
+                <!-- REQUIRED -->
+
+                <div
                   *ngIf="
-                    newPassword.errors?.['minlength'] ||
-                    newPassword.errors?.['pattern']
+                    currentPassword.invalid &&
+                    currentPassword.touched
                   "
-                >
-                  Password must contain at least 8 characters,
-                  uppercase, lowercase, number and special character.
-                </span>
-
-              </div>
-
-            </div>
-
-
-            <!-- Confirm Password -->
-            <div class="mb-3">
-
-              <label
-                for="confirmPassword"
-                class="form-label fw-semibold"
-              >
-                Confirm New Password
-              </label>
-
-              <div class="input-group">
-
-                <input
-                  id="confirmPassword"
-                  [type]="
-                    showConfirmPassword
-                      ? 'text'
-                      : 'password'
-                  "
-                  class="form-control"
-                  formControlName="confirmPassword"
+                  class="invalid-feedback d-block"
                 >
 
-                <button
-                  type="button"
-                  class="btn btn-outline-secondary"
-                  (click)="toggleConfirmPassword()"
+                  Current password is required.
+
+                </div>
+
+
+                <!-- WRONG PASSWORD -->
+
+                <div
+                  *ngIf="
+                    currentPasswordIncorrect
+                  "
+                  class="invalid-feedback d-block"
                 >
 
                   <i
-                    [class]="
-                      showConfirmPassword
-                        ? 'bi bi-eye-slash'
-                        : 'bi bi-eye'
-                    "
+                    class="bi bi-exclamation-circle me-1"
                   ></i>
 
-                </button>
+                  Current password is incorrect.
+
+                </div>
 
               </div>
 
-              <div
-                *ngIf="
-                  confirmPassword.touched &&
-                  confirmPassword.invalid
-                "
-                class="text-danger small mt-1"
-              >
-                Confirm password is required.
+
+              <!-- NEW PASSWORD -->
+
+              <div class="col-md-6">
+
+                <label
+                  class="form-label fw-semibold"
+                >
+                  New Password
+                </label>
+
+
+                <div class="input-group">
+
+                  <input
+                    [type]="
+                      showNewPassword
+                        ? 'text'
+                        : 'password'
+                    "
+                    class="form-control"
+                    formControlName="newPassword"
+
+                    [class.is-invalid]="
+                      newPassword.invalid &&
+                      newPassword.touched
+                    "
+                  />
+
+
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="
+                      toggleNewPassword()
+                    "
+                  >
+
+                    <i
+                      class="bi"
+                      [ngClass]="
+                        showNewPassword
+                          ? 'bi-eye-slash'
+                          : 'bi-eye'
+                      "
+                    ></i>
+
+                  </button>
+
+                </div>
+
+
+                <small
+                  class="text-muted"
+                >
+                  Minimum 8 characters,
+                  including uppercase,
+                  lowercase, number and
+                  special character.
+                </small>
+
+
+                <div
+                  *ngIf="
+                    newPassword.invalid &&
+                    newPassword.touched
+                  "
+                  class="invalid-feedback d-block"
+                >
+
+                  <span
+                    *ngIf="
+                      newPassword.errors?.['required']
+                    "
+                  >
+                    New password is required.
+                  </span>
+
+                  <span
+                    *ngIf="
+                      newPassword.errors?.['minlength'] ||
+                      newPassword.errors?.['pattern']
+                    "
+                  >
+                    Password must be at least 8
+                    characters and contain uppercase,
+                    lowercase, number and special
+                    character.
+                  </span>
+
+                </div>
+
+              </div>
+
+
+              <!-- CONFIRM PASSWORD -->
+
+              <div class="col-md-6">
+
+                <label
+                  class="form-label fw-semibold"
+                >
+                  Confirm New Password
+                </label>
+
+
+                <div class="input-group">
+
+                  <input
+                    [type]="
+                      showConfirmPassword
+                        ? 'text'
+                        : 'password'
+                    "
+                    class="form-control"
+                    formControlName="confirmPassword"
+
+                    [class.is-invalid]="
+                      confirmPassword.invalid &&
+                      confirmPassword.touched
+                    "
+                  />
+
+
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="
+                      toggleConfirmPassword()
+                    "
+                  >
+
+                    <i
+                      class="bi"
+                      [ngClass]="
+                        showConfirmPassword
+                          ? 'bi-eye-slash'
+                          : 'bi-eye'
+                      "
+                    ></i>
+
+                  </button>
+
+                </div>
+
+
+                <div
+                  *ngIf="
+                    confirmPassword.invalid &&
+                    confirmPassword.touched
+                  "
+                  class="invalid-feedback d-block"
+                >
+
+                  Confirm password is required.
+
+                </div>
+
               </div>
 
             </div>
 
 
-            <!-- Password Error -->
+            <!-- PASSWORD BUTTONS -->
+
             <div
-              *ngIf="passwordErrorMessage"
-              class="alert alert-danger"
+              class="d-flex gap-2 mt-4"
             >
-              {{ passwordErrorMessage }}
-            </div>
-
-
-            <!-- Password Buttons -->
-            <div class="d-flex gap-2">
 
               <button
                 type="submit"
@@ -646,7 +1239,7 @@
 
                 <span
                   *ngIf="changingPassword"
-                  class="spinner-border spinner-border-sm me-2"
+                  class="spinner-border spinner-border-sm me-1"
                 ></span>
 
                 {{
@@ -657,12 +1250,17 @@
 
               </button>
 
+
               <button
                 type="button"
                 class="btn btn-outline-secondary"
-                (click)="cancelPasswordChange()"
+                (click)="
+                  cancelPasswordChange()
+                "
               >
+
                 Cancel
+
               </button>
 
             </div>
@@ -673,20 +1271,48 @@
 
       </div>
 
+    </div>
 
-      <!-- Delete Account -->
-      <div class="card border-0 shadow-sm rounded-4 mt-4">
 
-        <div class="card-body p-4">
+    <!-- ========================= -->
+    <!-- DELETE ACCOUNT -->
+    <!-- ========================= -->
 
-          <h5 class="fw-bold text-danger">
-            Delete Account
-          </h5>
+    <div
+      class="card border-0 shadow-sm rounded-4 border-danger mb-4"
+    >
 
-          <p class="text-muted">
-            Once you delete your account, all your account data
-            may be permanently removed.
-          </p>
+      <div
+        class="card-body p-4 p-md-5"
+      >
+
+        <div
+          class="d-flex justify-content-between align-items-center flex-wrap gap-3"
+        >
+
+          <div>
+
+            <h4
+              class="fw-bold text-danger mb-1"
+            >
+
+              <i
+                class="bi bi-trash3 me-2"
+              ></i>
+
+              Delete Account
+
+            </h4>
+
+            <p
+              class="text-muted mb-0"
+            >
+              Permanently delete your account
+              and all associated data.
+            </p>
+
+          </div>
+
 
           <button
             type="button"
@@ -694,7 +1320,9 @@
             (click)="deleteAccount()"
           >
 
-            <i class="bi bi-trash me-2"></i>
+            <i
+              class="bi bi-trash3 me-1"
+            ></i>
 
             Delete Account
 
@@ -708,27 +1336,48 @@
 
   </div>
 
-</div>
-</div>
-<!-- Full Image Modal -->
+</main>
+
+
+<!-- ========================= -->
+<!-- IMAGE MODAL -->
+<!-- ========================= -->
+
 <div
   *ngIf="showImageModal"
   class="image-modal"
   (click)="closeImage()"
 >
-  <button
-    type="button"
-    class="close-image"
-    (click)="closeImage(); $event.stopPropagation()"
-  >
-    <i class="bi bi-x-lg"></i>
-  </button>
 
-  <img
-    [src]="selectedImageUrl"
-    alt="Profile Picture"
-    class="full-profile-image"
+  <div
+    class="image-modal-content"
     (click)="$event.stopPropagation()"
   >
+
+    <button
+      type="button"
+      class="image-modal-close"
+      (click)="closeImage()"
+    >
+
+      <i
+        class="bi bi-x-lg"
+      ></i>
+
+    </button>
+
+
+    <img
+      *ngIf="selectedImageUrl"
+      [src]="selectedImageUrl"
+      alt="Profile Picture"
+      class="image-modal-image"
+    />
+
+  </div>
+
 </div>
+
+</div>
+
 <app-footer></app-footer>

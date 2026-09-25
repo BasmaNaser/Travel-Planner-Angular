@@ -1,6 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Idestination } from '../../core/models/idestination';
 
 @Component({
   selector: 'app-destination-card',
@@ -11,17 +10,35 @@ import { Idestination } from '../../core/models/idestination';
 })
 export class DestinationCard {
 
-  @Input() destination!: Idestination;
+  @Input() destination: any;
 
-  @Output() addTrip =
-  new EventEmitter<Idestination>();
+  @Output() addTrip = new EventEmitter<any>();
 
-  toggleFavorite() {
-    this.destination.favorite =
-    !this.destination.favorite;
+  addToTrip(): void {
+    this.addTrip.emit(this.destination);
   }
 
-  addToTrip() {
-    this.addTrip.emit(this.destination);
+  getImage(): string {
+
+    const image = this.destination?.Image;
+
+    if (!image) {
+      return 'assets/images/destination-placeholder.jpg';
+    }
+
+    if (image.startsWith('http')) {
+      return image;
+    }
+
+    return `http://localhost:5000${
+      image.startsWith('/') ? '' : '/'
+    }${image}`;
+  }
+
+  getThingsToDo(): string[] {
+
+    return Array.isArray(this.destination?.ThingsToDo)
+      ? this.destination.ThingsToDo
+      : [];
   }
 }
