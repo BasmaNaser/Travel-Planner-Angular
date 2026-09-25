@@ -60,7 +60,7 @@
           </a>
         </li>
 
-        <li class="nav-item">
+        <li class="nav-item" *ngIf="auth.isLoggedIn()">
           <a
             class="nav-link"
             routerLink="/contact"
@@ -69,30 +69,66 @@
           </a>
         </li>
 
+        <li class="nav-item" *ngIf="auth.isLoggedIn()">
+          <a
+            class="nav-link"
+            routerLink="/complaints"
+            routerLinkActive="active">
+            My Complaints
+          </a>
+        </li>
+
         <li class="nav-item">
-  <a
-    class="nav-link"
-    routerLink="/chat"
-    routerLinkActive="active">
-    Chat
-  </a>
-</li>
+          <a
+            class="nav-link"
+            routerLink="/chat"
+            routerLinkActive="active">
+            Chat
+          </a>
+        </li>
 
       </ul>
 
       <div class="d-flex gap-2">
 
-        <button
-          class="btn login-btn"
-          routerLink="/login">
-          Login
-        </button>
+        <ng-container *ngIf="!auth.isLoggedIn(); else loggedIn">
 
-        <button
-          class="btn login-btn"
-          routerLink="/profile">
-          Profile
-        </button>
+          <button
+            class="btn login-btn"
+            routerLink="/login">
+            Login
+          </button>
+
+          <button
+            class="btn login-btn"
+            routerLink="/signup">
+            Sign Up
+          </button>
+
+        </ng-container>
+
+        <ng-template #loggedIn>
+
+          <button
+            class="btn login-btn"
+            routerLink="/profile">
+            Profile
+          </button>
+
+          <button
+            *ngIf="auth.isAdmin()"
+            class="btn login-btn"
+            routerLink="/admin">
+            Admin
+          </button>
+
+          <button
+            class="btn btn-outline-danger"
+            (click)="logout()">
+            Logout
+          </button>
+
+        </ng-template>
 
       </div>
 

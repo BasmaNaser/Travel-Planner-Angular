@@ -1,0 +1,181 @@
+<app-navbar></app-navbar>
+
+<div class="complaints-page">
+
+  <!-- Background Glow -->
+  <div class="background-glow glow-one"></div>
+  <div class="background-glow glow-two"></div>
+
+  <div class="container complaints-container">
+
+    <!-- Header -->
+    <div class="complaints-header">
+
+      <div>
+        <div class="section-label">
+          <span class="label-line"></span>
+          SUPPORT CENTER
+        </div>
+
+        <h1>
+          My <span>Complaints</span>
+        </h1>
+
+        <p>
+          Track your submitted complaints and check their current status.
+        </p>
+      </div>
+
+      <div class="complaints-count" *ngIf="!loading">
+        <div class="count-number">
+          {{ complaints.length }}
+        </div>
+
+        <div class="count-label">
+          Complaints
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading-container">
+
+      <div class="loading-spinner"></div>
+
+      <p>Loading your complaints...</p>
+
+    </div>
+
+
+    <!-- Error -->
+    <div
+      *ngIf="!loading && errorMessage"
+      class="empty-state"
+    >
+
+      <div class="empty-icon">
+        <i class="bi bi-chat-square-text"></i>
+      </div>
+
+      <h3>{{ errorMessage }}</h3>
+
+      <p>
+        Your submitted complaints will appear here.
+      </p>
+
+    </div>
+
+
+    <!-- Complaints -->
+    <div
+      *ngIf="!loading && complaints.length"
+      class="complaints-grid"
+    >
+
+      <div
+        class="complaint-card"
+        *ngFor="let complaint of complaints; let i = index"
+      >
+
+        <!-- Card Top -->
+        <div class="card-top">
+
+          <div class="complaint-number">
+            #{{ (i + 1).toString().padStart(2, '0') }}
+          </div>
+
+          <div
+            class="status-badge"
+            [ngClass]="getStatusClass(complaint.status)"
+          >
+
+            <i
+              class="bi"
+              [ngClass]="getStatusIcon(complaint.status)"
+            ></i>
+
+            {{ getStatusText(complaint.status) }}
+
+          </div>
+
+        </div>
+
+
+        <!-- Icon -->
+        <div class="complaint-icon">
+
+          <i class="bi bi-chat-left-text-fill"></i>
+
+        </div>
+
+
+        <!-- Content -->
+        <div class="complaint-content">
+
+          <h3>
+            {{ complaint.subject || 'Complaint' }}
+          </h3>
+
+          <div class="date">
+            <i class="bi bi-calendar3"></i>
+
+            {{ complaint.createdAt | date:'MMM d, y, h:mm a' }}
+          </div>
+
+          <div class="divider"></div>
+
+          <p>
+            {{ complaint.message }}
+          </p>
+
+        </div>
+
+
+        <!-- Footer -->
+        <div class="complaint-footer">
+
+          <div class="status-info">
+
+            <span class="status-dot"
+              [ngClass]="getStatusClass(complaint.status)">
+            </span>
+
+            <span>
+              {{ getStatusText(complaint.status) }}
+            </span>
+
+          </div>
+
+          <i class="bi bi-arrow-up-right"></i>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- No Complaints -->
+    <div
+      *ngIf="!loading && !complaints.length && !errorMessage"
+      class="empty-state"
+    >
+
+      <div class="empty-icon">
+        <i class="bi bi-chat-square-dots"></i>
+      </div>
+
+      <h3>No complaints yet</h3>
+
+      <p>
+        You haven't submitted any complaints yet.
+      </p>
+
+    </div>
+
+  </div>
+</div>
+
+<app-footer></app-footer>

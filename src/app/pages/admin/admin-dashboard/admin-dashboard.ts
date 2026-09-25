@@ -1,3 +1,4 @@
+
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 
 import { DashboardService } from '../../services/dashboard.service';
@@ -107,3 +108,4 @@ loadBookingStats(): void {
     });
   }
 }
+

@@ -1,0 +1,50 @@
+.section1 img {
+            border-radius: 12px;
+        }
+
+        .section1 .d-flex {
+            height: 80vh
+        }
+
+        @media (max-width:700px) {
+            .section1 .d-flex {
+                height: 67vh
+            }
+        }
+
+        .section4 {
+            height: 60vh;
+        }
+
+        button.btn {
+            color: white;
+            font-weight: 600;
+            transition: all 0.5s linear;
+            background-color: #0ea5a8;
+        }
+
+        button.btn:hover {
+            color: #0ea5a8;
+            background-color: white;
+            border: 1px solid #0ea5a8;
+            transition: all 0.5s linear;
+        }
+
+        .section2 a {
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .section2 a:hover {
+            text-decoration: underline;
+            opacity: 0.5;
+        }
+
+        .top {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+
+    padding-top: 80px;
+    min-height: calc(100vh - 80px);
+} 

@@ -1,0 +1,130 @@
+<nav>
+    <ul>
+        <li>
+            <a routerLink="/all-complaints"> hhhhhhhhhhhhhhhhhhhhhhhhhhhhh</a>
+        </li>
+    </ul>
+</nav>
+
+<div class="all-complaints-page">
+  <div class="background-glow glow-one"></div>
+  <div class="background-glow glow-two"></div>
+
+  <div class="container complaints-container">
+
+    <div class="page-header">
+      <div>
+        <div class="section-label">
+          <span class="label-line"></span>
+          ADMIN SUPPORT CENTER
+        </div>
+        <h1>All <span>Complaints</span></h1>
+        <p>Review complaints and update their status directly from this page.</p>
+      </div>
+
+      <div class="complaints-count" *ngIf="!loading">
+        <strong>{{ complaints.length }}</strong>
+        <span>Complaints</span>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="state-card">
+      <div class="loading-spinner"></div>
+      <h4>Loading complaints...</h4>
+      <p>Please wait while we get the latest complaints.</p>
+    </div>
+
+    <div *ngIf="!loading && errorMessage" class="state-card error-state">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <h4>Something went wrong</h4>
+      <p>{{ errorMessage }}</p>
+      <button class="btn btn-primary" (click)="loadComplaints()">Try Again</button>
+    </div>
+
+    <div *ngIf="!loading && !errorMessage && !complaints.length" class="state-card">
+      <i class="bi bi-chat-square-dots"></i>
+      <h4>No complaints yet</h4>
+      <p>There are no complaints to display.</p>
+    </div>
+
+    <div *ngIf="!loading && !errorMessage && complaints.length" class="complaints-grid">
+      <article class="complaint-card" *ngFor="let complaint of complaints; let i = index">
+
+        <div class="card-top">
+          <div class="complaint-number">#{{ (i + 1).toString().padStart(2, '0') }}</div>
+
+          <div class="status-pill" [ngClass]="getStatusClass(complaint.status)">
+            <i class="bi" [ngClass]="getStatusIcon(complaint.status)"></i>
+            {{ getStatusText(complaint.status) }}
+          </div>
+        </div>
+
+        <div class="complaint-icon">
+          <i class="bi bi-chat-left-text-fill"></i>
+        </div>
+
+        <div class="complaint-content">
+          <h3>{{ complaint.subject || 'Complaint' }}</h3>
+
+          <div class="user-row">
+            <div class="avatar">
+  <img
+    *ngIf="getUserImage(complaint)"
+    [src]="getUserImage(complaint)"
+    [alt]="getUserName(complaint)"
+    (error)="$any($event.target).style.display='none'"
+  />
+
+  <span *ngIf="!getUserImage(complaint)">
+    {{ getUserName(complaint).charAt(0).toUpperCase() }}
+  </span>
+</div>
+            <div>
+              <strong>{{ getUserName(complaint) }}</strong>
+              <small>{{ getUserEmail(complaint) }}</small>
+            </div>
+          </div>
+
+          <div class="date">
+            <i class="bi bi-calendar3"></i>
+            {{ complaint.createdAt | date:'MMM d, y, h:mm a' }}
+          </div>
+
+          <div class="divider"></div>
+
+          <p class="message">{{ complaint.message }}</p>
+        </div>
+
+        <div class="status-editor">
+          <label>
+            <i class="bi bi-arrow-repeat"></i>
+            Update status
+          </label>
+
+          <div class="select-wrap">
+            <select
+  class="form-select"
+  [(ngModel)]="complaint.status"
+  [disabled]="updatingId === getId(complaint)"
+  (change)="changeStatus(complaint, $event)"
+>
+  <option
+    *ngFor="let status of statuses"
+    [ngValue]="status.value"
+  >
+    {{ status.label }}
+  </option>
+</select>
+
+            <span *ngIf="updatingId === getId(complaint)" class="mini-spinner"></span>
+          </div>
+
+          <small *ngIf="updatingId === getId(complaint)" class="updating-text">
+            Saving...
+          </small>
+        </div>
+
+      </article>
+    </div>
+  </div>
+</div>

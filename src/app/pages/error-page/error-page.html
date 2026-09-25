@@ -1,1 +1,180 @@
-<p>error-page works!</p>
+
+<div class="error-page">
+
+  <!-- Animated Stars -->
+  <div class="stars stars-1"></div>
+  <div class="stars stars-2"></div>
+  <div class="stars stars-3"></div>
+
+  <div class="error-content">
+
+    <!-- SVG Illustration -->
+    <div class="illustration">
+
+      <!-- Orbit -->
+      <div class="orbit orbit-1"></div>
+      <div class="orbit orbit-2"></div>
+
+      <!-- Planet -->
+      <svg
+        class="planet"
+        viewBox="0 0 300 300"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+
+        <!-- Shadow -->
+        <ellipse
+          cx="150"
+          cy="265"
+          rx="75"
+          ry="15"
+          fill="rgba(0,0,0,0.15)"
+        />
+
+        <!-- Planet -->
+        <circle
+          cx="150"
+          cy="145"
+          r="90"
+          fill="#14b8a6"
+        />
+
+        <!-- Planet Highlight -->
+        <circle
+          cx="125"
+          cy="115"
+          r="65"
+          fill="#2dd4bf"
+          opacity=".45"
+        />
+
+        <!-- Craters -->
+        <circle cx="95" cy="130" r="12" fill="#0f766e" opacity=".45"/>
+        <circle cx="185" cy="95" r="17" fill="#0f766e" opacity=".35"/>
+        <circle cx="200" cy="160" r="10" fill="#0f766e" opacity=".4"/>
+        <circle cx="135" cy="185" r="15" fill="#0f766e" opacity=".35"/>
+        <circle cx="90" cy="175" r="7" fill="#0f766e" opacity=".35"/>
+
+        <!-- Face -->
+        <circle cx="120" cy="145" r="6" fill="#083f3b"/>
+        <circle cx="180" cy="145" r="6" fill="#083f3b"/>
+
+        <!-- Smile -->
+        <path
+          d="M125 170 Q150 190 175 170"
+          fill="none"
+          stroke="#083f3b"
+          stroke-width="6"
+          stroke-linecap="round"
+        />
+
+        <!-- Ring -->
+        <ellipse
+          cx="150"
+          cy="145"
+          rx="125"
+          ry="35"
+          fill="none"
+          stroke="#99f6e4"
+          stroke-width="10"
+          opacity=".8"
+          transform="rotate(-15 150 145)"
+        />
+
+      </svg>
+
+      <!-- Floating Rocket -->
+      <svg
+        class="rocket"
+        viewBox="0 0 120 180"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+
+        <!-- Flame -->
+        <path
+          d="M60 145
+             C45 160 48 175 60 180
+             C72 175 75 160 60 145Z"
+          fill="#f59e0b"
+        />
+
+        <path
+          d="M60 150
+             C53 162 56 170 60 173
+             C64 169 67 161 60 150Z"
+          fill="#fef3c7"
+        />
+
+        <!-- Rocket -->
+        <path
+          d="M60 10
+             C30 35 25 75 35 125
+             L60 145
+             L85 125
+             C95 75 90 35 60 10Z"
+          fill="#f8fafc"
+        />
+
+        <!-- Window -->
+        <circle
+          cx="60"
+          cy="65"
+          r="15"
+          fill="#14b8a6"
+          stroke="#0f766e"
+          stroke-width="5"
+        />
+
+        <!-- Left Wing -->
+        <path
+          d="M35 105 L10 130 L35 130Z"
+          fill="#0f766e"
+        />
+
+        <!-- Right Wing -->
+        <path
+          d="M85 105 L110 130 L85 130Z"
+          fill="#0f766e"
+        />
+
+        <!-- Nose -->
+        <path
+          d="M60 10
+             C53 18 48 25 44 35
+             L76 35
+             C72 25 67 18 60 10Z"
+          fill="#14b8a6"
+        />
+
+      </svg>
+
+      <!-- Small Stars -->
+      <span class="star star-a">✦</span>
+      <span class="star star-b">✧</span>
+      <span class="star star-c">✦</span>
+      <span class="star star-d">✧</span>
+
+    </div>
+
+    <!-- 404 -->
+    <div class="error-code">
+      <span>{{ status }}</span>
+    </div>
+
+    <h1 class="error-heading">
+      {{ heading }}
+    </h1>
+
+    <p class="error-message">
+      Oops! The page you're looking for seems to have
+      drifted into another galaxy.
+    </p>
+
+    <a routerLink="/home" class="home-btn">
+      <span>←</span>
+      Back to Home
+    </a>
+
+  </div>
+
+</div>

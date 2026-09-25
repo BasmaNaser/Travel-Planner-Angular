@@ -1,0 +1,84 @@
+<div class="destination-card h-100 d-flex flex-column">
+
+  <!-- Image -->
+  <div class="card-img-wrapper">
+
+    <img
+      [src]="getImage()"
+      [alt]="destination?.Name || 'Destination'"
+    >
+
+    @if (destination?.Badge) {
+      <span class="badge-top-left bg-warning text-dark">
+        {{ destination.Badge }}
+      </span>
+    }
+
+  </div>
+
+  <!-- Content -->
+  <div class="p-3 d-flex flex-column flex-grow-1">
+
+    <div class="d-flex justify-content-between align-items-start mb-1">
+
+      <h5 class="fw-bold mb-0">
+        {{ destination?.Name }}
+      </h5>
+
+    </div>
+
+    <p class="text-muted small mb-2">
+
+      <i class="bi bi-geo-alt"></i>
+
+      {{ destination?.Location }}
+
+    </p>
+
+    <!-- Things To Do -->
+    <div class="mb-3">
+
+      @for (
+        thing of getThingsToDo();
+        track thing
+      ) {
+
+        <span class="tag-badge">
+          {{ thing }}
+        </span>
+
+      }
+
+    </div>
+
+    <!-- Bottom -->
+    <div
+      class="d-flex justify-content-between align-items-end
+             mt-auto pt-2 border-top"
+    >
+
+      <div>
+
+        <span class="starting-text">
+          Starting from
+        </span>
+
+        <div class="price-text">
+          {{ destination?.PricePerPerson | currency }}
+        </div>
+
+      </div>
+
+      <button
+        type="button"
+        class="btn-custom-outline"
+        (click)="addToTrip()"
+      >
+        Add To Trip
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
