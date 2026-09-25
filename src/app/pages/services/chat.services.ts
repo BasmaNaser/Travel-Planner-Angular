@@ -10,16 +10,29 @@ export class ChatService {
   private chatUrl = 'http://localhost:5000/chat';
   private socket: Socket;
 
+  // constructor(private http: HttpClient) {
+
+  //   const token = localStorage.getItem('token');
+
+  //   this.socket = io('http://localhost:5000', {
+  //     auth: {
+  //       token: token
+  //     }
+  //   });
+  // }
+
   constructor(private http: HttpClient) {
+  this.socket = io('http://localhost:5000', {
+    autoConnect: false
+  });
 
-    const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token');
 
-    this.socket = io('http://localhost:5000', {
-      auth: {
-        token: token
-      }
-    });
+  if (token) {
+    this.socket.auth = { token };
+    this.socket.connect();
   }
+}
 
   sendMessage(text: string) {
 
@@ -50,9 +63,22 @@ export class ChatService {
     );
   }
 
+  // onNewMessage(callback: (message: any) => void): void {
+  //   this.socket.on('message:new', callback);
+  // }
   onNewMessage(callback: (message: any) => void): void {
-    this.socket.on('message:new', callback);
+  const token = localStorage.getItem('token');
+
+  if (token) {
+    this.socket.auth = { token };
+
+    if (!this.socket.connected) {
+      this.socket.connect();
+    }
   }
+
+  this.socket.on('message:new', callback);
+}
 
   onMessageRead(callback: (data: any) => void): void {
     this.socket.on('message:read', callback);
