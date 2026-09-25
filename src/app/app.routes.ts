@@ -1,10 +1,12 @@
 import { Routes } from '@angular/router';
+
 import { Home } from './pages/home/home';
 import { About } from './pages/about/about';
 import { Services } from './pages/services/services';
-import { Destination } from './pages/destination/destination';
 import { Details } from './pages/details/details';
-import { Book } from './pages/book/book';
+import { BookingComponent } from './pages/booking/booking';
+import { PaymentsComponent } from './pages/payments/payments';
+import { PaymentMethodComponent } from './pages/payment-method/payment-method';
 import { Contact } from './pages/contact/contact';
 import { Profile } from './pages/profile/profile';
 import { Login } from './pages/login/login';
@@ -15,17 +17,21 @@ import { ResetPasswordSuccessfuly } from './pages/reset-password-successfuly/res
 import { AdminDashboard } from './pages/admin/admin-dashboard/admin-dashboard';
 import { AdminBooking } from './pages/admin/admin-booking/admin-booking';
 import { AdminComplaints } from './pages/admin/admin-complaints/admin-complaints';
+import { DestinationComponent } from './pages/destinations/destinations';
+import { DestinationDetailsComponent } from './pages/destination-details/destination-details';
 import { ErrorPage } from './pages/error-page/error-page';
 
 export const routes: Routes = [
+
   {
     path: '',
     component: Home,
-    pathMatch:'full'
+    pathMatch: 'full'
   },
+
   {
     path: 'home',
-    component: Home,
+    component: Home
   },
 
   {
@@ -39,18 +45,23 @@ export const routes: Routes = [
   },
 
   {
-    path: 'destinations',
-    component: Destination
-  },
-
-  {
     path: 'details/:id',
     component: Details
   },
 
   {
     path: 'book/:id',
-    component: Book
+    component: BookingComponent
+  },
+
+  {
+    path: 'payments/:id',
+    component: PaymentsComponent
+  },
+
+  {
+    path: 'payment-method/:id',
+    component: PaymentMethodComponent
   },
 
   {
@@ -104,7 +115,19 @@ export const routes: Routes = [
   },
 
   {
+    path: 'destinations',
+    component: DestinationComponent,
+    pathMatch: 'full'
+  },
+
+  {
+    path: 'destinations/:id',
+    component: DestinationDetailsComponent
+  },
+
+  {
     path: '**',
     component: ErrorPage
   }
+
 ];
