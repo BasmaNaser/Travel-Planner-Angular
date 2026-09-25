@@ -17,6 +17,7 @@ import { Complaints } from './pages/complaints/complaints';
 import { AdminDashboard } from './pages/admin/admin-dashboard/admin-dashboard';
 import { AdminBooking } from './pages/admin/admin-booking/admin-booking';
 import { AdminComplaints } from './pages/admin/admin-complaints/admin-complaints';
+import { AllComplaints } from './pages/all-complaints/all-complaints';
 import { ErrorPage } from './pages/error-page/error-page';
 import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
@@ -34,6 +35,7 @@ export const routes: Routes = [
   { path: 'contact', component: Contact, canActivate: [authGuard] },
   { path: 'profile', component: Profile, canActivate: [authGuard] },
   { path: 'complaints', component: Complaints, canActivate: [authGuard] },
+  { path: 'all-complaints', component: AllComplaints, canActivate: [adminGuard] },
 
   { path: 'login', component: Login, canActivate: [guestGuard] },
   { path: 'signup', component: Signup, canActivate: [guestGuard] },

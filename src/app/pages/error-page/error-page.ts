@@ -13,6 +13,7 @@ export class ErrorPage {
 
   status = 404;
   message = 'The page or resource you requested was not found.';
+  heading = 'Lost in Space?';
 
   constructor() {
     const status = Number(this.route.snapshot.queryParamMap.get('status'));
@@ -20,5 +21,13 @@ export class ErrorPage {
 
     if (status) this.status = status;
     if (message) this.message = message;
+
+    if (this.status === 401) {
+      this.heading = 'Login Required';
+    } else if (this.status === 403) {
+      this.heading = 'Access Denied';
+    } else if (this.status === 404) {
+      this.heading = 'Lost in Space?';
+    }
   }
 }

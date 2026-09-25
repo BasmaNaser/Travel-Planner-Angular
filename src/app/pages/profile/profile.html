@@ -50,21 +50,22 @@
           <div class="mb-4">
 
             <!-- Preview -->
-            <img
-              *ngIf="imagePreview"
-              [src]="imagePreview"
-              alt="Profile Preview"
-              class="rounded-circle profile-image"
-            >
+           <img
+  *ngIf="imagePreview"
+  [src]="imagePreview"
+  alt="Profile Preview"
+  class="rounded-circle profile-image clickable-image"
+  (click)="openImage(imagePreview)"
+>
 
             <!-- Existing Image -->
             <img
-              *ngIf="!imagePreview && user.profilePicture"
-              [src]="user.profilePicture"
-              alt="Profile Picture"
-              class="rounded-circle profile-image"
-            >
-
+  *ngIf="!imagePreview && user.profilePicture"
+  [src]="user.profilePicture"
+  alt="Profile Picture"
+  class="rounded-circle profile-image clickable-image"
+  (click)="openImage(user.profilePicture)"
+>
             <!-- Default Image -->
             <div
               *ngIf="!imagePreview && !user.profilePicture"
@@ -709,5 +710,25 @@
 
 </div>
 </div>
+<!-- Full Image Modal -->
+<div
+  *ngIf="showImageModal"
+  class="image-modal"
+  (click)="closeImage()"
+>
+  <button
+    type="button"
+    class="close-image"
+    (click)="closeImage(); $event.stopPropagation()"
+  >
+    <i class="bi bi-x-lg"></i>
+  </button>
 
+  <img
+    [src]="selectedImageUrl"
+    alt="Profile Picture"
+    class="full-profile-image"
+    (click)="$event.stopPropagation()"
+  >
+</div>
 <app-footer></app-footer>

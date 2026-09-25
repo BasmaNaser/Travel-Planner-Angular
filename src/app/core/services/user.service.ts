@@ -160,5 +160,27 @@ export class UserService {
     );
 
   }
+  getAllComplaints(): Observable<any> {
+  return this.http.get(
+    `${this.apiUrl}/all-complaints`
+  );
+}
+
+updateComplaintStatus(
+  id: string,
+  status: string
+): Observable<any> {
+
+  console.log('PATCH STATUS:', {
+    url: `${this.apiUrl}/complaint/${id}/status`,
+    id,
+    status
+  });
+
+  return this.http.patch(
+    `${this.apiUrl}/complaint/${id}/status`,
+    { status }
+  );
+}
 
 }

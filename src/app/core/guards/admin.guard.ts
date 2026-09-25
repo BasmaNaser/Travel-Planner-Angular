@@ -6,8 +6,23 @@ export const adminGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
-  if (!auth.isLoggedIn()) return router.createUrlTree(['/login']);
-  return auth.isAdmin() ? true : router.createUrlTree(['/error'], {
-    queryParams: { status: 403, message: 'You are not authorized to access this page.' }
+  if (!auth.isLoggedIn()) {
+    return router.createUrlTree(['/error'], {
+      queryParams: {
+        status: 401,
+        message: 'You must be logged in to access this page.'
+      }
+    });
+  }
+
+  if (auth.isAdmin()) {
+    return true;
+  }
+
+  return router.createUrlTree(['/error'], {
+    queryParams: {
+      status: 403,
+      message: 'You are not authorized to access this page.'
+    }
   });
 };

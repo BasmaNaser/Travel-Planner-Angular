@@ -13,9 +13,9 @@
         <li class="nav-item"><a class="nav-link" routerLinkActive="active" routerLink="/about">About Us</a></li>
         <li class="nav-item"><a class="nav-link" routerLinkActive="active" routerLink="/services">Services</a></li>
         <li class="nav-item"><a class="nav-link" routerLinkActive="active" routerLink="/destinations">Destinations</a></li>
-        <li class="nav-item"><a class="nav-link" routerLinkActive="active" routerLink="/contact">Contact Us</a></li>
+        <li class="nav-item"><a class="nav-link" routerLinkActive="active" routerLink="/contact" *ngIf="auth.isLoggedIn()">Contact Us</a></li>
         <li class="nav-item" *ngIf="auth.isLoggedIn()">
-          <a class="nav-link" routerLinkActive="active" routerLink="/complaints">My Complaints</a>
+          <a class="nav-link" routerLinkActive="active"  *ngIf="auth.isLoggedIn()" routerLink="/complaints">My Complaints</a>
         </li>
       </ul>
 

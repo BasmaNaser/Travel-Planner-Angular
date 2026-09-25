@@ -26,7 +26,8 @@ export class Profile implements OnInit {
 
   private fb = inject(FormBuilder);
   private userService = inject(UserService);
-
+showImageModal = false;
+selectedImageUrl: string | null = null;
   user: any = null;
 
   loading = true;
@@ -158,6 +159,19 @@ export class Profile implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
   }
+  openImage(imageUrl: string | null): void {
+  if (!imageUrl) {
+    return;
+  }
+
+  this.selectedImageUrl = imageUrl;
+  this.showImageModal = true;
+}
+
+closeImage(): void {
+  this.showImageModal = false;
+  this.selectedImageUrl = null;
+}
 
   cancelEdit(): void {
 

@@ -26,13 +26,56 @@ export class Complaints implements OnInit {
       },
       error: error => {
         this.loading = false;
+
         if (error.status === 400) {
           this.complaints = [];
-          this.errorMessage = error.error?.message || 'No complaints found.';
+          this.errorMessage =
+            error.error?.message || 'No complaints found.';
         } else {
-          this.errorMessage = apiMessage(error, 'Unable to load complaints.');
+          this.errorMessage = apiMessage(
+            error,
+            'Unable to load complaints.'
+          );
         }
       }
     });
+  }
+
+  getStatusClass(status: string): string {
+    switch (status?.toLowerCase()) {
+      case 'resolved':
+        return 'status-resolved';
+
+      case 'inprocess':
+        return 'status-inprocess';
+
+      case 'pending':
+        return 'status-pending';
+
+      default:
+        return 'status-pending';
+    }
+  }
+
+  getStatusIcon(status: string): string {
+    switch (status?.toLowerCase()) {
+      case 'resolved':
+        return 'bi-check-circle-fill';
+
+      case 'inprocess':
+        return 'bi-hourglass-split';
+
+      case 'pending':
+        return 'bi-clock-fill';
+
+      default:
+        return 'bi-clock-fill';
+    }
+  }
+
+  getStatusText(status: string): string {
+    if (!status) return 'Pending';
+
+    return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
   }
 }
