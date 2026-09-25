@@ -1,4 +1,6 @@
+
 import { Routes } from '@angular/router';
+
 import { Home } from './pages/home/home';
 import { About } from './pages/about/about';
 import { Services } from './pages/services/services';
@@ -8,80 +10,71 @@ import { Contact } from './pages/contact/contact';
 import { Profile } from './pages/profile/profile';
 import { Login } from './pages/login/login';
 import { Signup } from './pages/signup/signup';
-import { ForgetPasswordEmail } from './pages/forget-password-email/forget-password-email';
-import { CreateNewPassword } from './pages/create-new-password/create-new-password';
-import { ResetPasswordSuccessfuly } from './pages/reset-password-successfuly/reset-password-successfuly';
-import { AdminDashboard } from './pages/admin/admin-dashboard/admin-dashboard';
-import { AdminBooking } from './pages/admin/admin-booking/admin-booking';
-import { AdminComplaints } from './pages/admin/admin-complaints/admin-complaints';
+
+import { Destination } from './pages/destination/destination';
 import { DestinationComponent } from './pages/destinations/destinations';
 import { DestinationDetailsComponent } from './pages/destination-details/destination-details';
 
+import { VerifyOtp } from './pages/verify-otp/verify-otp';
+import { ForgetPasswordEmail } from './pages/forget-password-email/forget-password-email';
+import { CreateNewPassword } from './pages/create-new-password/create-new-password';
+import { ResetPasswordSuccessfuly } from './pages/reset-password-successfuly/reset-password-successfuly';
+
+import { Complaints } from './pages/complaints/complaints';
 import { ErrorPage } from './pages/error-page/error-page';
+
+import { AdminDashboard } from './pages/admin/admin-dashboard/admin-dashboard';
+import { AdminBooking } from './pages/admin/admin-booking/admin-booking';
+import { AdminComplaints } from './pages/admin/admin-complaints/admin-complaints';
+
 import { Chat } from './pages/chat/chat';
 import { AdminChat } from './pages/admin/admin-chat/admin-chat';
 
+import { authGuard } from './core/guards/auth.guard';
+import { guestGuard } from './core/guards/guest.guard';
+import { adminGuard } from './core/guards/admin.guard';
+
 export const routes: Routes = [
-  {
-    path: '',
-    component: Home,
-    pathMatch: 'full',
-  },
-  {
-    path: 'home',
-    component: Home,
-  },
+  { path: '', component: Home, pathMatch: 'full' },
 
-  {
-    path: 'about',
-    component: About,
-  },
+  { path: 'home', component: Home },
 
-  {
-    path: 'services',
-    component: Services,
-  },
+  { path: 'about', component: About },
 
-  {
-    path: 'details/:id',
-    component: Details,
-  },
+  { path: 'services', component: Services },
 
-  {
-    path: 'book/:id',
-    component: Book,
-  },
+  { path: 'destinations', component: Destination },
 
-  {
-    path: 'contact',
-    component: Contact,
-  },
+  { path: 'destinations/:id', component: DestinationDetailsComponent },
 
-  {
-    path: 'profile',
-    component: Profile,
-  },
+  { path: 'details/:id', component: Details },
 
-  { path: 'chat', component: Chat },
-  { path: 'admin/chat', component: AdminChat },
-  {
-    path: 'login',
-    component: Login,
-  },
+  { path: 'book/:id', component: Book },
 
-  {
-    path: 'signup',
-    component: Signup,
-  },
+  { path: 'contact', component: Contact, canActivate: [authGuard] },
+
+  { path: 'profile', component: Profile, canActivate: [authGuard] },
+
+  { path: 'complaints', component: Complaints, canActivate: [authGuard] },
+
+  { path: 'chat', component: Chat, canActivate: [authGuard] },
+
+  { path: 'login', component: Login, canActivate: [guestGuard] },
+
+  { path: 'signup', component: Signup, canActivate: [guestGuard] },
+
+  { path: 'verify-otp', component: VerifyOtp, canActivate: [guestGuard] },
 
   {
     path: 'forget-password',
     component: ForgetPasswordEmail,
+    canActivate: [guestGuard],
   },
 
   {
-    path: 'create-new-password',
+    path: 'create-new-password/:token',
     component: CreateNewPassword,
+    canActivate: [guestGuard],
   },
 
   {
@@ -89,33 +82,27 @@ export const routes: Routes = [
     component: ResetPasswordSuccessfuly,
   },
 
-  {
-    path: 'admin',
-    component: AdminDashboard,
-  },
+  { path: 'admin', component: AdminDashboard, canActivate: [adminGuard] },
 
   {
     path: 'admin/bookings',
     component: AdminBooking,
+    canActivate: [adminGuard],
   },
 
   {
     path: 'admin/complaints',
     component: AdminComplaints,
-  },
-  {
-    path: 'destinations',
-    component: DestinationComponent,
-    pathMatch: 'full',
+    canActivate: [adminGuard],
   },
 
   {
-    path: 'destinations/:id',
-    component: DestinationDetailsComponent,
+    path: 'admin/chat',
+    component: AdminChat,
+    canActivate: [adminGuard],
   },
 
-  {
-    path: '**',
-    component: ErrorPage,
-  },
+  { path: 'error', component: ErrorPage },
+
+  { path: '**', component: ErrorPage },
 ];

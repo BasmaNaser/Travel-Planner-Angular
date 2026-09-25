@@ -1,0 +1,144 @@
+<div class="container py-5">
+
+  <div class="row justify-content-center">
+
+    <div class="col-md-6 col-lg-5">
+
+      <div class="card shadow border-0 rounded-4">
+
+        <div class="card-body p-4 p-md-5">
+
+          <div class="text-center mb-4">
+
+            <h2 class="fw-bold">
+              Verify Your Email
+            </h2>
+
+            <p class="text-muted">
+              We sent a 6-digit verification code
+              to
+              <strong>{{ email }}</strong>
+            </p>
+
+          </div>
+
+
+          @if (successMessage) {
+
+            <div class="alert alert-success">
+              {{ successMessage }}
+            </div>
+
+          }
+
+
+          @if (errorMessage) {
+
+            <div class="alert alert-danger">
+              {{ errorMessage }}
+            </div>
+
+          }
+
+
+          <form
+            [formGroup]="form"
+            (ngSubmit)="verifyOtp()"
+          >
+
+            <div class="mb-3">
+
+              <label
+                for="otp"
+                class="form-label"
+              >
+                Verification Code
+              </label>
+
+              <input
+                id="otp"
+                type="text"
+                maxlength="6"
+                inputmode="numeric"
+                class="form-control form-control-lg text-center"
+                placeholder="000000"
+                formControlName="otp"
+              >
+
+
+              @if (fieldError()) {
+
+                <small class="text-danger d-block validation-error">
+                  {{ fieldError() }}
+                </small>
+
+              }
+
+            </div>
+
+
+            <button
+              type="submit"
+              class="btn btn-primary w-100"
+              [disabled]="loading"
+            >
+
+              @if (loading) {
+
+                Verifying...
+
+              } @else {
+
+                Verify OTP
+
+              }
+
+            </button>
+
+          </form>
+
+
+          <div class="text-center mt-4">
+
+            <p class="text-muted mb-2">
+              Didn't receive the code?
+            </p>
+
+
+            <button
+              type="button"
+              class="btn btn-link"
+              [disabled]="
+                secondsLeft > 0 ||
+                resendLoading
+              "
+              (click)="resendOtp()"
+            >
+
+              @if (resendLoading) {
+
+                Sending...
+
+              } @else if (secondsLeft > 0) {
+
+                Resend in {{ secondsLeft }}s
+
+              } @else {
+
+                Resend OTP
+
+              }
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
