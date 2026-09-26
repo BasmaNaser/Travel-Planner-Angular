@@ -1,9 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Navbar } from '../../components/navbar/navbar';
 import { Footer } from '../../components/footer/footer';
 import { UserService } from '../../core/services/user.service';
 import { apiMessage } from '../../core/utils/api-error.util';
+import { interval, startWith } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   imports: [CommonModule, Navbar, Footer],
@@ -13,12 +15,31 @@ import { apiMessage } from '../../core/utils/api-error.util';
 })
 export class Complaints implements OnInit {
   private readonly userService = inject(UserService);
+  private readonly destroyRef = inject(DestroyRef);
 
   complaints: any[] = [];
   loading = true;
   errorMessage = '';
 
   ngOnInit(): void {
+    this.loadComplaints();
+
+    // Keep My Complaints synchronized without a browser refresh.
+    interval(5000)
+      .pipe(
+        startWith(0),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(() => this.loadComplaints(false));
+  }
+
+  loadComplaints(showLoader = true): void {
+    if (showLoader) {
+      this.loading = true;
+    }
+
+    this.errorMessage = '';
+
     this.userService.getMyComplaints().subscribe({
       next: response => {
         this.loading = false;
@@ -74,8 +95,14 @@ export class Complaints implements OnInit {
   }
 
   getStatusText(status: string): string {
-    if (!status) return 'Pending';
-
-    return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+    switch ((status || '').toLowerCase()) {
+      case 'inprocess':
+        return 'In Process';
+      case 'resolved':
+        return 'Resolved';
+      case 'pending':
+      default:
+        return 'Pending';
+    }
   }
 }

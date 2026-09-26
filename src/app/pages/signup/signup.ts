@@ -1,832 +1,3 @@
-// <<<<<<< HEAD
-// import { Component } from '@angular/core';
-
-// @Component({
-//   imports: [],
-//   selector: 'app-signup',
-//   styleUrl: './signup.css',
-//   templateUrl: './signup.html',
-// })
-// export class Signup {}
-// =======
-// import {
-//   Component,
-//   inject
-// } from '@angular/core';
-
-// import {
-//   CommonModule
-// } from '@angular/common';
-
-// import {
-//   AbstractControl,
-//   FormBuilder,
-//   ReactiveFormsModule,
-//   ValidationErrors,
-//   Validators
-// } from '@angular/forms';
-
-// import {
-//   Router,
-//   RouterLink
-// } from '@angular/router';
-
-// import {
-//   AuthService
-// } from '../../services/auth.service';
-
-// import {
-//   apiMessage,
-//   applyBackendErrors
-// } from '../../core/utils/api-error.util';
-
-
-// function passwordMatchValidator(
-//   control: AbstractControl
-// ): ValidationErrors | null {
-
-//   const password =
-//     control.get('password')?.value;
-
-//   const confirmPassword =
-//     control.get('confirmPassword')?.value;
-
-//   if (
-//     password &&
-//     confirmPassword &&
-//     password !== confirmPassword
-//   ) {
-//     return {
-//       passwordMismatch: true
-//     };
-//   }
-
-//   return null;
-// }
-
-
-// @Component({
-//   selector: 'app-signup',
-
-//   standalone: true,
-
-//   imports: [
-//     CommonModule,
-//     ReactiveFormsModule,RouterLink
-//   ],
-
-//   templateUrl: './signup.html',
-
-//   styleUrl: './signup.css'
-// })
-// export class Signup {
-
-//   private fb =
-//     inject(FormBuilder);
-
-//   private authService =
-//     inject(AuthService);
-
-//   private router =
-//     inject(Router);
-
-
-//   loading = false;
-
-//   errorMessage = '';
-
-//   successMessage = '';
-
-
-//   form = this.fb.nonNullable.group({
-
-//     fullName: [
-//       '',
-//       [
-//         Validators.required,
-
-//         Validators.pattern(
-//           /^[a-zA-Z]{3,20}(( )[a-zA-Z]{3,20}){1,4}$/
-//         )
-//       ]
-//     ],
-
-
-//     email: [
-//       '',
-//       [
-//         Validators.required,
-
-//         Validators.email,
-
-//         Validators.pattern(
-//           /^[a-zA-Z0-9._%+-]+@gmail\.com$/
-//         )
-//       ]
-//     ],
-
-
-//     phone: [
-//       '',
-//       [
-//         Validators.required,
-
-//         Validators.pattern(
-//           /^(01)(1|2|0|5)[0-9]{8}$/
-//         )
-//       ]
-//     ],
-
-
-//     dob: [
-//       '',
-//       [
-//         Validators.required
-//       ]
-//     ],
-
-
-//     password: [
-//       '',
-//       [
-//         Validators.required,
-
-//         Validators.pattern(
-//           /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@%$&*^#])[a-zA-Z0-9@%$&*^#]{8,}$/
-//         )
-//       ]
-//     ],
-
-
-//     confirmPassword: [
-//       '',
-//       [
-//         Validators.required
-//       ]
-//     ]
-
-//   }, {
-
-//     validators: passwordMatchValidator
-
-//   });
-
-
-//   // =========================================================
-//   // GETTERS
-//   // =========================================================
-
-//   get fullName() {
-//     return this.form.controls.fullName;
-//   }
-
-
-//   get email() {
-//     return this.form.controls.email;
-//   }
-
-
-//   get phone() {
-//     return this.form.controls.phone;
-//   }
-
-
-//   get dob() {
-//     return this.form.controls.dob;
-//   }
-
-
-//   get password() {
-//     return this.form.controls.password;
-//   }
-
-
-//   get confirmPassword() {
-//     return this.form.controls.confirmPassword;
-//   }
-
-
-//   // =========================================================
-//   // FIELD ERRORS
-//   // =========================================================
-
-//   fieldError(
-//     field: string
-//   ): string {
-
-//     const control =
-//       this.form.get(field);
-
-
-//     if (
-//       !control ||
-//       !control.touched ||
-//       !control.errors
-//     ) {
-//       return '';
-//     }
-
-
-//     // =======================================================
-//     // EMAIL / PHONE ALREADY EXISTS
-//     // =======================================================
-
-//     if (
-//       control.errors['userExists']
-//     ) {
-
-//       if (field === 'email') {
-//         return 'User already exists in email.';
-//       }
-
-//       if (field === 'phone') {
-//         return 'User already exists with this phone number.';
-//       }
-//     }
-
-
-//     // =======================================================
-//     // BACKEND FIELD ERROR
-//     // =======================================================
-
-//     if (
-//       control.errors['backend']
-//     ) {
-//       return control.errors['backend'];
-//     }
-
-
-//     // =======================================================
-//     // REQUIRED
-//     // =======================================================
-
-//     if (
-//       control.errors['required']
-//     ) {
-
-//       switch (field) {
-
-//         case 'fullName':
-//           return 'Full Name is required.';
-
-//         case 'email':
-//           return 'Email is required.';
-
-//         case 'phone':
-//           return 'Phone Number is required.';
-
-//         case 'dob':
-//           return 'Date of birth is required.';
-
-//         case 'password':
-//           return 'Password is required.';
-
-//         case 'confirmPassword':
-//           return 'Confirm Password is required.';
-//       }
-//     }
-
-
-//     // =======================================================
-//     // PATTERN
-//     // =======================================================
-
-//     if (
-//       control.errors['pattern']
-//     ) {
-
-//       switch (field) {
-
-//         case 'fullName':
-//           return 'Please enter a valid full name.';
-
-//         case 'email':
-//           return 'Please enter a valid Gmail address.';
-
-//         case 'phone':
-//           return 'Please enter a valid Egyptian phone number.';
-
-//         case 'password':
-//           return 'Password must contain at least 8 characters, uppercase, lowercase, number and special character.';
-//       }
-//     }
-
-
-//     // =======================================================
-//     // PASSWORD MATCH
-//     // =======================================================
-
-//     if (
-//       field === 'confirmPassword' &&
-//       control.errors['passwordMismatch']
-//     ) {
-//       return 'Passwords do not match.';
-//     }
-
-
-//     return '';
-//   }
-
-
-//   // =========================================================
-//   // REMOVE OLD DUPLICATE ERRORS
-//   // =========================================================
-
-//   private clearDuplicateErrors(): void {
-
-//     const controls = [
-//       this.email,
-//       this.phone
-//     ];
-
-
-//     controls.forEach(control => {
-
-//       if (!control.errors) {
-//         return;
-//       }
-
-
-//       const errors = {
-//         ...control.errors
-//       };
-
-
-//       delete errors['userExists'];
-
-
-//       control.setErrors(
-//         Object.keys(errors).length > 0
-//           ? errors
-//           : null
-//       );
-
-//     });
-
-//   }
-
-
-//   // =========================================================
-//   // SUBMIT
-//   // =========================================================
-
-//   submit(): void {
-
-//     this.errorMessage = '';
-
-//     this.successMessage = '';
-
-
-//     // Remove old duplicate errors
-//     this.clearDuplicateErrors();
-
-
-//     // =======================================================
-//     // FRONTEND VALIDATION
-//     // =======================================================
-
-//     if (
-//       this.form.invalid
-//     ) {
-
-//       this.form.markAllAsTouched();
-
-//       console.log(
-//         '[Signup Page] Form validation failed:',
-//         this.form.errors,
-//         this.form.value
-//       );
-
-//       return;
-//     }
-
-
-//     this.loading = true;
-
-
-//     const email =
-//       this.email.value
-//         .trim()
-//         .toLowerCase();
-
-
-//     const phone =
-//       this.phone.value
-//         .trim();
-
-
-//     // =======================================================
-//     // CHECK ALL USERS + ADMINS BEFORE SIGNUP
-//     // GET /users/All
-//     // =======================================================
-
-//     console.log(
-//       '[Signup Page] Checking existing users and admins before signup...'
-//     );
-
-
-//     this.authService
-//       .getAllUsers()
-//       .subscribe({
-
-//         // =====================================================
-//         // GET /users/All SUCCESS
-//         // =====================================================
-
-//         next: (response) => {
-
-//           console.log(
-//             '[Signup Page] GET /users/All success:',
-//             response
-//           );
-
-
-//           const users =
-//             Array.isArray(response?.data)
-//               ? response.data
-//               : [];
-
-
-//           console.log(
-//             '[Signup Page] Users and admins received:',
-//             users
-//           );
-
-
-//           // ===================================================
-//           // CHECK EMAIL
-//           // ===================================================
-
-//           const emailExists =
-//             users.some(
-//               (user: any) => {
-
-//                 const existingEmail =
-//                   String(
-//                     user?.email ?? ''
-//                   )
-//                     .trim()
-//                     .toLowerCase();
-
-
-//                 return existingEmail === email;
-
-//               }
-//             );
-
-
-//           if (
-//             emailExists
-//           ) {
-
-//             this.loading = false;
-
-
-//             this.email.setErrors({
-
-//               ...(this.email.errors ?? {}),
-
-//               userExists: true
-
-//             });
-
-
-//             this.email.markAsTouched();
-
-
-//             console.log(
-//               '[Signup Page] Email already exists. Signup request was not sent.'
-//             );
-
-
-//             return;
-//           }
-
-
-//           // ===================================================
-//           // CHECK PHONE
-//           // ===================================================
-
-//           const phoneExists =
-//             users.some(
-//               (user: any) => {
-
-//                 const existingPhone =
-//                   String(
-//                     user?.phone ?? ''
-//                   )
-//                     .trim();
-
-
-//                 return existingPhone === phone;
-
-//               }
-//             );
-
-
-//           if (
-//             phoneExists
-//           ) {
-
-//             this.loading = false;
-
-
-//             this.phone.setErrors({
-
-//               ...(this.phone.errors ?? {}),
-
-//               userExists: true
-
-//             });
-
-
-//             this.phone.markAsTouched();
-
-
-//             console.log(
-//               '[Signup Page] Phone already exists. Signup request was not sent.'
-//             );
-
-
-//             return;
-//           }
-
-
-//           // ===================================================
-//           // EMAIL + PHONE AVAILABLE
-//           // ===================================================
-
-//           console.log(
-//             '[Signup Page] Email and phone are available. Sending signup request...'
-//           );
-
-
-//           this.createAccount();
-
-//         },
-
-
-//         // =====================================================
-//         // GET /users/All ERROR
-//         // =====================================================
-
-//         error: (error) => {
-
-//           console.error(
-//             '[Signup Page] GET /users/All error:',
-//             error
-//           );
-
-
-//           this.loading = false;
-
-
-//           this.errorMessage =
-//             apiMessage(
-//               error,
-//               'Unable to check email and phone availability.'
-//             );
-
-//         }
-
-//       });
-
-//   }
-
-
-//   // =========================================================
-//   // CREATE ACCOUNT
-//   // =========================================================
-
-//   private createAccount(): void {
-
-//     const signupData = {
-
-//       fullName:
-//         this.fullName.value
-//           .trim(),
-
-//       email:
-//         this.email.value
-//           .trim()
-//           .toLowerCase(),
-
-//       phone:
-//         this.phone.value
-//           .trim(),
-
-//       dob:
-//         this.dob.value,
-
-//       password:
-//         this.password.value
-
-//     };
-
-
-//     console.log(
-//       '[Signup Page] Signup payload:',
-//       {
-//         ...signupData,
-
-//         password: '********'
-//       }
-//     );
-
-
-//     this.authService
-//       .signup(signupData)
-//       .subscribe({
-
-//         // ===================================================
-//         // SIGNUP SUCCESS
-//         // ===================================================
-
-//         next: (signupResponse) => {
-
-//           console.log(
-//             '[Signup Page] Signup success:',
-//             signupResponse
-//           );
-
-
-//           this.loading = false;
-
-
-//           this.successMessage =
-//             signupResponse?.message ||
-//             'Account created successfully. Please verify your email.';
-
-
-//           this.authService
-//             .setPendingVerificationEmail(
-//               signupData.email
-//             );
-
-
-//           this.router.navigate(
-//             ['/verify-otp'],
-//             {
-//               queryParams: {
-//                 email: signupData.email
-//               }
-//             }
-//           );
-
-//         },
-
-
-//         // ===================================================
-//         // SIGNUP ERROR
-//         // ===================================================
-
-//         error: (error) => {
-
-//           console.error(
-//             '[Signup Page] Signup API error:',
-//             error
-//           );
-
-
-//           this.loading = false;
-
-
-//           const backendMessage =
-//             String(
-//               error?.error?.message ||
-//               error?.message ||
-//               ''
-//             );
-
-
-//           const normalizedMessage =
-//             backendMessage.toLowerCase();
-
-
-//           // =================================================
-//           // EMAIL ALREADY EXISTS
-//           // =================================================
-
-//           if (
-//             error?.status === 409 &&
-//             normalizedMessage.includes(
-//               'email already exists'
-//             )
-//           ) {
-
-//             this.email.setErrors({
-
-//               ...(this.email.errors ?? {}),
-
-//               userExists: true
-
-//             });
-
-
-//             this.email.markAsTouched();
-
-
-//             console.log(
-//               '[Signup Page] Backend confirmed that email already exists.'
-//             );
-
-
-//             return;
-//           }
-
-
-//           // =================================================
-//           // PHONE ALREADY EXISTS
-//           // =================================================
-
-//           if (
-//             error?.status === 409 &&
-//             (
-//               normalizedMessage.includes(
-//                 'phone already exists'
-//               ) ||
-
-//               normalizedMessage.includes(
-//                 'phone number already exists'
-//               ) ||
-
-//               normalizedMessage.includes(
-//                 'mobile already exists'
-//               )
-//             )
-//           ) {
-
-//             this.phone.setErrors({
-
-//               ...(this.phone.errors ?? {}),
-
-//               userExists: true
-
-//             });
-
-
-//             this.phone.markAsTouched();
-
-
-//             console.log(
-//               '[Signup Page] Backend confirmed that phone already exists.'
-//             );
-
-
-//             return;
-//           }
-
-
-//           // =================================================
-//           // OTHER BACKEND FIELD ERRORS
-//           // =================================================
-
-//           const mappedMessage =
-//             applyBackendErrors(
-//               this.form,
-//               error
-//             );
-
-
-//           if (
-//             mappedMessage
-//           ) {
-
-//             this.errorMessage =
-//               mappedMessage;
-
-//             return;
-//           }
-
-
-//           // =================================================
-//           // GENERAL BACKEND ERROR
-//           // =================================================
-
-//           this.errorMessage =
-//             apiMessage(
-//               error,
-//               'Something went wrong. Please try again.'
-//             );
-
-//         }
-
-//       });
-
-//   }
-
-// }
-// >>>>>>> basma
-
-
-
-
-
-
-
-
-
-
 import {
   Component,
   inject
@@ -859,6 +30,10 @@ import {
 } from '../../core/utils/api-error.util';
 
 
+// =========================================================
+// PASSWORD MATCH VALIDATOR
+// =========================================================
+
 function passwordMatchValidator(
   control: AbstractControl
 ): ValidationErrors | null {
@@ -883,14 +58,20 @@ function passwordMatchValidator(
 }
 
 
+// =========================================================
+// COMPONENT
+// =========================================================
+
 @Component({
   selector: 'app-signup',
   standalone: true,
+
   imports: [
     CommonModule,
     ReactiveFormsModule,
     RouterLink
   ],
+
   templateUrl: './signup.html',
   styleUrl: './signup.css'
 })
@@ -907,9 +88,19 @@ export class Signup {
 
 
   loading = false;
+
   errorMessage = '';
+
   successMessage = '';
 
+  showPassword = false;
+
+  showConfirmPassword = false;
+
+
+  // =========================================================
+  // FORM
+  // =========================================================
 
   form = this.fb.nonNullable.group({
 
@@ -1003,60 +194,56 @@ export class Signup {
 
 
   // =========================================================
-  // FIELD ERRORS
+  // PASSWORD VISIBILITY
   // =========================================================
 
-  fieldError(
-    field: string
-  ): string {
+  togglePassword(): void {
+
+    this.showPassword =
+      !this.showPassword;
+  }
+
+
+  toggleConfirmPassword(): void {
+
+    this.showConfirmPassword =
+      !this.showConfirmPassword;
+  }
+
+
+  // =========================================================
+  // FIELD ERROR
+  // =========================================================
+
+  fieldError(field: string): string {
 
     const control =
       this.form.get(field);
 
     if (
       !control ||
-      !control.touched ||
       !control.errors
     ) {
       return '';
     }
 
 
-    if (
-      control.errors['userExists']
-    ) {
+    // =======================================================
+    // REQUIRED
+    // =======================================================
 
-      if (field === 'email') {
-        return 'User already exists in email.';
-      }
-
-      if (field === 'phone') {
-        return 'User already exists with this phone number.';
-      }
-    }
-
-
-    if (
-      control.errors['backend']
-    ) {
-      return control.errors['backend'];
-    }
-
-
-    if (
-      control.errors['required']
-    ) {
+    if (control.errors['required']) {
 
       switch (field) {
 
         case 'fullName':
-          return 'Full Name is required.';
+          return 'Full name is required.';
 
         case 'email':
           return 'Email is required.';
 
         case 'phone':
-          return 'Phone Number is required.';
+          return 'Phone number is required.';
 
         case 'dob':
           return 'Date of birth is required.';
@@ -1065,29 +252,117 @@ export class Signup {
           return 'Password is required.';
 
         case 'confirmPassword':
-          return 'Confirm Password is required.';
+          return 'Please confirm your password.';
       }
     }
 
 
+    // =======================================================
+    // EMAIL ALREADY REGISTERED
+    // =======================================================
+
     if (
+      field === 'email' &&
+      (
+        control.errors['emailAlreadyRegistered'] ||
+        control.errors['userExists']
+      )
+    ) {
+
+      return 'Email already registered. Please use another email.';
+    }
+
+
+    // =======================================================
+    // PHONE ALREADY REGISTERED
+    // =======================================================
+
+    if (
+      field === 'phone' &&
+      (
+        control.errors['phoneAlreadyRegistered'] ||
+        control.errors['userExists']
+      )
+    ) {
+
+      return 'Phone already registered. Please use another phone number.';
+    }
+
+
+    // =======================================================
+    // FULL NAME
+    // =======================================================
+
+    if (
+      field === 'fullName' &&
       control.errors['pattern']
     ) {
 
-      switch (field) {
+      return 'Please enter a valid full name.';
+    }
 
-        case 'fullName':
-          return 'Please enter a valid full name.';
 
-        case 'email':
-          return 'Please enter a valid Gmail address.';
+    // =======================================================
+    // EMAIL
+    // =======================================================
 
-        case 'phone':
-          return 'Please enter a valid Egyptian phone number.';
+    if (
+      field === 'email' &&
+      control.errors['pattern']
+    ) {
 
-        case 'password':
-          return 'Password must contain at least 8 characters, uppercase, lowercase, number and special character.';
-      }
+      return 'Please enter a valid Gmail address.';
+    }
+
+
+    // =======================================================
+    // PHONE
+    // =======================================================
+
+    if (
+      field === 'phone' &&
+      control.errors['pattern']
+    ) {
+
+      return 'Please enter a valid Egyptian phone number.';
+    }
+
+
+    // =======================================================
+    // PASSWORD
+    // =======================================================
+
+    if (
+      field === 'password' &&
+      control.errors['pattern']
+    ) {
+
+      return 'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character (@ % $ & * ^ #).';
+    }
+
+
+    // =======================================================
+    // CONFIRM PASSWORD
+    // =======================================================
+
+    if (
+      field === 'confirmPassword' &&
+      control.errors['passwordMismatch']
+    ) {
+
+      return 'Passwords do not match.';
+    }
+
+
+    // =======================================================
+    // BACKEND VALIDATION
+    // =======================================================
+
+    if (
+      control.errors['serverError']
+    ) {
+
+      return control.errors['serverError'];
     }
 
 
@@ -1096,7 +371,7 @@ export class Signup {
 
 
   // =========================================================
-  // REMOVE OLD DUPLICATE ERRORS
+  // CLEAR DUPLICATE ERRORS
   // =========================================================
 
   private clearDuplicateErrors(): void {
@@ -1106,24 +381,36 @@ export class Signup {
       this.phone
     ];
 
+
     controls.forEach(control => {
 
       if (!control.errors) {
         return;
       }
 
+
       const errors = {
         ...control.errors
       };
 
+
       delete errors['userExists'];
+
+      delete errors['phoneAlreadyRegistered'];
+
+      delete errors['emailAlreadyRegistered'];
+
+      delete errors['serverError'];
+
 
       control.setErrors(
         Object.keys(errors).length > 0
           ? errors
           : null
       );
+
     });
+
   }
 
 
@@ -1134,22 +421,21 @@ export class Signup {
   submit(): void {
 
     this.errorMessage = '';
+
     this.successMessage = '';
 
     this.clearDuplicateErrors();
 
+
+    // =======================================================
+    // ANGULAR VALIDATION
+    // =======================================================
 
     if (
       this.form.invalid
     ) {
 
       this.form.markAllAsTouched();
-
-      console.log(
-        '[Signup Page] Form validation failed:',
-        this.form.errors,
-        this.form.value
-      );
 
       return;
     }
@@ -1169,28 +455,25 @@ export class Signup {
         .trim();
 
 
-    console.log(
-      '[Signup Page] Checking existing users and admins before signup...'
-    );
-
+    // =======================================================
+    // CHECK EXISTING USERS
+    // =======================================================
 
     this.authService
       .getAllUsers()
       .subscribe({
 
-        next: (response) => {
-
-          console.log(
-            '[Signup Page] GET /users/All success:',
-            response
-          );
-
+        next: (response: any) => {
 
           const users =
             Array.isArray(response?.data)
               ? response.data
               : [];
 
+
+          // =================================================
+          // CHECK EMAIL
+          // =================================================
 
           const emailExists =
             users.some(
@@ -1208,15 +491,16 @@ export class Signup {
             );
 
 
-          if (
-            emailExists
-          ) {
+          if (emailExists) {
 
             this.loading = false;
 
             this.email.setErrors({
+
               ...(this.email.errors ?? {}),
-              userExists: true
+
+              emailAlreadyRegistered: true
+
             });
 
             this.email.markAsTouched();
@@ -1224,6 +508,10 @@ export class Signup {
             return;
           }
 
+
+          // =================================================
+          // CHECK PHONE
+          // =================================================
 
           const phoneExists =
             users.some(
@@ -1240,15 +528,16 @@ export class Signup {
             );
 
 
-          if (
-            phoneExists
-          ) {
+          if (phoneExists) {
 
             this.loading = false;
 
             this.phone.setErrors({
+
               ...(this.phone.errors ?? {}),
-              userExists: true
+
+              phoneAlreadyRegistered: true
+
             });
 
             this.phone.markAsTouched();
@@ -1257,14 +546,22 @@ export class Signup {
           }
 
 
+          // =================================================
+          // CREATE ACCOUNT
+          // =================================================
+
           this.createAccount();
         },
 
 
+        // ===================================================
+        // GET USERS ERROR
+        // ===================================================
+
         error: (error) => {
 
           console.error(
-            '[Signup Page] GET /users/All error:',
+            '[Signup Page] GET /users error:',
             error
           );
 
@@ -1273,7 +570,7 @@ export class Signup {
           this.errorMessage =
             apiMessage(
               error,
-              'Unable to check email and phone availability.'
+              'Unable to check existing users. Please try again.'
             );
         }
 
@@ -1323,14 +620,20 @@ export class Signup {
       .signup(signupData)
       .subscribe({
 
-        next: (signupResponse) => {
+        // ===================================================
+        // SUCCESS
+        // ===================================================
+
+        next: (signupResponse: any) => {
 
           console.log(
             '[Signup Page] Signup success:',
             signupResponse
           );
 
+
           this.loading = false;
+
 
           this.successMessage =
             signupResponse?.message ||
@@ -1354,6 +657,10 @@ export class Signup {
         },
 
 
+        // ===================================================
+        // SIGNUP API ERROR
+        // ===================================================
+
         error: (error) => {
 
           console.error(
@@ -1361,64 +668,125 @@ export class Signup {
             error
           );
 
+
+          // IMPORTANT:
+          // Stop loading immediately
+
           this.loading = false;
 
 
+          // =================================================
+          // GET BACKEND MESSAGE
+          // =================================================
+
           const backendMessage =
             String(
-              error?.error?.message ||
-              error?.message ||
+              error?.error?.message ??
+              error?.error ??
+              error?.message ??
               ''
-            );
+            ).trim();
 
 
           const normalizedMessage =
             backendMessage.toLowerCase();
 
 
+          console.log(
+            '[Signup Page] Backend message:',
+            backendMessage
+          );
+
+
+          // =================================================
+          // PHONE ALREADY REGISTERED
+          // =================================================
+
           if (
-            error?.status === 409 &&
+            normalizedMessage.includes(
+              'phone already registered'
+            ) ||
+
+            normalizedMessage.includes(
+              'phone already exists'
+            ) ||
+
+            normalizedMessage.includes(
+              'phone number already registered'
+            ) ||
+
+            normalizedMessage.includes(
+              'phone number already exists'
+            ) ||
+
+            normalizedMessage.includes(
+              'mobile already registered'
+            ) ||
+
+            normalizedMessage.includes(
+              'mobile already exists'
+            )
+          ) {
+
+            console.log(
+              '[Signup Page] Phone already registered.'
+            );
+
+
+            this.phone.setErrors({
+
+              ...(this.phone.errors ?? {}),
+
+              phoneAlreadyRegistered: true
+
+            });
+
+
+            this.phone.markAsTouched();
+
+
+            return;
+          }
+
+
+          // =================================================
+          // EMAIL ALREADY REGISTERED
+          // =================================================
+
+          if (
+            normalizedMessage.includes(
+              'email already registered'
+            ) ||
+
             normalizedMessage.includes(
               'email already exists'
             )
           ) {
 
+            console.log(
+              '[Signup Page] Email already registered.'
+            );
+
+
             this.email.setErrors({
+
               ...(this.email.errors ?? {}),
-              userExists: true
+
+              emailAlreadyRegistered: true
+
             });
+
 
             this.email.markAsTouched();
 
-            return;
-          }
-
-
-          if (
-            error?.status === 409 &&
-            (
-              normalizedMessage.includes(
-                'phone already exists'
-              ) ||
-              normalizedMessage.includes(
-                'phone number already exists'
-              ) ||
-              normalizedMessage.includes(
-                'mobile already exists'
-              )
-            )
-          ) {
-
-            this.phone.setErrors({
-              ...(this.phone.errors ?? {}),
-              userExists: true
-            });
-
-            this.phone.markAsTouched();
 
             return;
           }
 
+
+          // =================================================
+          // OTHER BACKEND FIELD ERRORS
+          // =================================================
 
           const mappedMessage =
             applyBackendErrors(
@@ -1427,9 +795,7 @@ export class Signup {
             );
 
 
-          if (
-            mappedMessage
-          ) {
+          if (mappedMessage) {
 
             this.errorMessage =
               mappedMessage;
@@ -1437,6 +803,10 @@ export class Signup {
             return;
           }
 
+
+          // =================================================
+          // GENERAL ERROR
+          // =================================================
 
           this.errorMessage =
             apiMessage(
@@ -1447,4 +817,5 @@ export class Signup {
 
       });
   }
+
 }

@@ -130,7 +130,11 @@ export class Profile implements OnInit {
       next: (response: any) => {
         this.loading = false;
 
-        this.user = response?.data;
+        this.user = response?.data || null;
+
+        if (this.user?.profilePicture) {
+          this.user.profilePicture = this.normalizeProfileImage(this.user.profilePicture);
+        }
 
         this.patchForm();
       },
@@ -229,6 +233,27 @@ export class Profile implements OnInit {
   // IMAGE MODAL
   // =========================
 
+  private normalizeProfileImage(url: string | null | undefined, cacheBust = false): string {
+    if (!url) {
+      return '';
+    }
+
+    const fullUrl = url.startsWith('http')
+      ? url
+      : `http://localhost:5000${url.startsWith('/') ? '' : '/'}${url}`;
+
+    if (!cacheBust) {
+      return fullUrl;
+    }
+
+    const separator = fullUrl.includes('?') ? '&' : '?';
+    return `${fullUrl}${separator}v=${Date.now()}`;
+  }
+
+  getProfileImageUrl(): string {
+    return this.normalizeProfileImage(this.user?.profilePicture);
+  }
+
   openImage(imageUrl: string | null): void {
     if (!imageUrl) {
       return;
@@ -287,7 +312,18 @@ export class Profile implements OnInit {
       next: (response: any) => {
         this.uploadingImage = false;
 
-        this.user = response?.data || this.user;
+        const returnedPicture =
+          response?.data?.profilePicture ??
+          response?.profilePicture ??
+          this.user?.profilePicture;
+
+        if (this.user) {
+          this.user = {
+            ...this.user,
+            ...(response?.data || {}),
+            profilePicture: this.normalizeProfileImage(returnedPicture, true),
+          };
+        }
 
         this.selectedImage = null;
         this.imagePreview = null;
@@ -477,9 +513,13 @@ export class Profile implements OnInit {
 
     // Same password
     if (currentPassword === newPassword) {
-      this.passwordErrorMessage = 'New password must be different from your current password.';
+      this.newPassword.setErrors({
+        ...(this.newPassword.errors ?? {}),
+        sameAsCurrent: true,
+      });
 
       this.newPassword.markAsTouched();
+      this.passwordErrorMessage = '';
 
       return;
     }
@@ -523,13 +563,25 @@ export class Profile implements OnInit {
         /*
          * Backend says current password is wrong.
          */
-        if (error?.status === 400 || error?.status === 401) {
-          this.currentPasswordIncorrect = true;
+        const normalizedMessage = String(message).toLowerCase();
 
+        const currentPasswordError =
+          normalizedMessage.includes('current password') &&
+          (
+            normalizedMessage.includes('incorrect') ||
+            normalizedMessage.includes('wrong') ||
+            normalizedMessage.includes('invalid')
+          );
+
+        if (error?.status === 401 || currentPasswordError) {
+          this.currentPasswordIncorrect = true;
+          this.currentPassword.setErrors({
+            ...(this.currentPassword.errors ?? {}),
+            incorrect: true,
+          });
           this.currentPassword.markAsTouched();
 
           this.passwordErrorMessage = 'Current password is incorrect.';
-
           return;
         }
 
@@ -643,21 +695,26 @@ export class Profile implements OnInit {
   // BOOKING IMAGE
   // =========================
 
-  getBookingImage(booking: MyBooking): string {
-    const destination = this.getBookingDestination(booking);
+  // getBookingImage(booking: MyBooking): string {
+  //   const destination = this.getBookingDestination(booking);
 
-    const image = destination?.Image || '';
+  //   const image = destination?.Image || '';
 
-    if (!image) {
-      return 'assets/images/destination-placeholder.jpg';
-    }
+  //   if (!image) {
+  //     return 'assets/images/destination-placeholder.jpg';
+  //   }
 
-    if (image.startsWith('http')) {
-      return image;
-    }
+  //   if (image.startsWith('http')) {
+  //     return image;
+  //   }
 
-    return `http://localhost:5000${image.startsWith('/') ? '' : '/'}${image}`;
-  }
+  //   return `http://localhost:5000${image.startsWith('/') ? '' : '/'}${image}`;
+  // }
+
+
+getBookingImage(booking: any): string {
+  return booking?.DestinationID?.Image || '';
+}
 
   // =========================
   // FORM GETTERS
@@ -682,8 +739,4 @@ export class Profile implements OnInit {
   get confirmPassword() {
     return this.passwordForm.controls.confirmPassword;
   }
-
-  
 }
-
-

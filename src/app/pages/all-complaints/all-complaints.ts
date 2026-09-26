@@ -11,7 +11,7 @@ type ComplaintStatus = 'pending' | 'inProcess' | 'resolved';
 @Component({
   selector: 'app-all-complaints',
   standalone: true,
-  imports: [CommonModule,RouterLink,FormsModule],
+  imports: [CommonModule,FormsModule,Navbar,Footer],
   templateUrl: './all-complaints.html',
   styleUrl: './all-complaints.css'
 })
@@ -92,84 +92,137 @@ getUserImage(complaint: any): string {
 
   return `http://localhost:5000${image.startsWith('/') ? '' : '/'}${image}`;
 }
-  changeStatus(
-    complaint: any,
-    event: Event
-  ): void {
 
-    const select =
-      event.target as HTMLSelectElement;
+changeStatus(
+  complaint: any,
+  newStatus: ComplaintStatus
+): void {
 
-    const newStatus =
-      select.value as ComplaintStatus;
+  console.log('🔄 Selected status:', newStatus);
+  console.log('🔄 Old status:', complaint.status);
 
-    if (
-      !newStatus ||
-      newStatus === complaint.status
-    ) {
-      return;
-    }
+  const allowedStatuses: ComplaintStatus[] = [
+    'pending',
+    'inProcess',
+    'resolved'
+  ];
 
-    const oldStatus =
-      complaint.status;
+  if (!allowedStatuses.includes(newStatus)) {
+    console.error('❌ Invalid status:', newStatus);
+    return;
+  }
 
-    const id =
-      this.getId(complaint);
+  const oldStatus = complaint.status;
 
-    if (!id) {
-      console.error('Complaint ID not found:', complaint);
-      return;
-    }
+  if (newStatus === oldStatus) {
+    return;
+  }
 
-    complaint.status = newStatus;
-    this.updatingId = id;
+  const id = this.getId(complaint);
 
-    this.userService
-      .updateComplaintStatus(id, newStatus)
-      .subscribe({
+  if (!id) {
+    console.error('❌ Complaint ID not found:', complaint);
+    return;
+  }
 
-        next: (response: any) => {
+  this.updatingId = id;
+  this.errorMessage = '';
 
-          console.log(
-            '✅ STATUS UPDATED:',
-            response
-          );
+  /*
+   * Optimistic update:
+   * نغير الـ UI فورًا بدون انتظار refresh.
+   */
+  complaint.status = newStatus;
 
-          if (response?.data) {
+  // Force Angular to detect the new array reference
+  this.complaints = [...this.complaints];
 
-            const index =
-              this.complaints.findIndex(
-                item =>
-                  this.getId(item) === id
+  console.log('📤 Updating complaint:', {
+    id,
+    status: newStatus
+  });
+
+  this.userService
+    .updateComplaintStatus(id, newStatus)
+    .subscribe({
+
+      next: (response: any) => {
+
+        console.log('✅ STATUS UPDATED:', response);
+
+        /*
+         * مهم:
+         * بعد نجاح الـ API نعيد تحميل complaints
+         * من الـ backend عشان الـ UI يبقى مطابق
+         * للبيانات الموجودة في database.
+         */
+        this.userService
+          .getAllComplaints()
+          .subscribe({
+
+            next: (complaintsResponse: any) => {
+
+              console.log(
+                '✅ REFRESHED COMPLAINTS:',
+                complaintsResponse
               );
 
-            if (index !== -1) {
-              this.complaints[index] =
-                response.data;
+              this.complaints =
+                complaintsResponse?.data ?? [];
+
+              this.updatingId = null;
+            },
+
+            error: (error: any) => {
+
+              console.error(
+                '❌ Failed to reload complaints:',
+                error
+              );
+
+              /*
+               * الـ update نفسه نجح،
+               * لذلك نخلي الحالة الجديدة موجودة
+               * بدل ما نرجعها للقديمة.
+               */
+              complaint.status = newStatus;
+              this.complaints = [...this.complaints];
+
+              this.updatingId = null;
+
+              this.errorMessage =
+                'Status updated, but the complaints list could not be refreshed.';
             }
-          }
 
-          this.updatingId = null;
-        },
+          });
+      },
 
-        error: (error: any) => {
+      error: (error: any) => {
 
-          console.error(
-            '❌ STATUS UPDATE ERROR:',
-            error
-          );
+        console.error(
+          '❌ STATUS UPDATE ERROR:',
+          error
+        );
 
-          complaint.status = oldStatus;
+        /*
+         * الـ API فشل → نرجع الحالة القديمة.
+         */
+        complaint.status = oldStatus;
 
-          this.updatingId = null;
+        this.complaints = [...this.complaints];
 
-          this.errorMessage =
-            error?.error?.message ||
-            'Unable to update complaint status.';
-        }
+        this.updatingId = null;
 
-      });
-  }
+        this.errorMessage =
+          error?.error?.message ||
+          'Unable to update complaint status.';
+      }
+
+    });
+}
+
+
+
 
   getId(complaint: any): string {
     return complaint?._id || complaint?.id || '';

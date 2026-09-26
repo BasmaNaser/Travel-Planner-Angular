@@ -1,10 +1,12 @@
 <nav class="navbar navbar-expand-lg bg-white shadow-sm fixed-top">
   <div class="container">
 
+    <!-- Logo -->
     <a class="navbar-brand fw-bold" routerLink="/">
       Trip<span>Mate</span>
     </a>
 
+    <!-- Mobile Toggle -->
     <button
       class="navbar-toggler border-0 shadow-none"
       type="button"
@@ -15,16 +17,20 @@
       aria-label="Toggle navigation">
 
       <span class="navbar-toggler-icon"></span>
-
     </button>
 
     <div
       class="collapse navbar-collapse"
       id="navbarNav">
 
+      <!-- ========================= -->
+      <!-- COMMON LINKS -->
+      <!-- ========================= -->
+
       <ul class="navbar-nav mx-auto">
 
-        <li class="nav-item">
+        <!-- Home -->
+        <li class="nav-item" *ngIf="!auth.isAdmin()">
           <a
             class="nav-link"
             routerLink="/home"
@@ -33,7 +39,8 @@
           </a>
         </li>
 
-        <li class="nav-item">
+        <!-- About -->
+        <li class="nav-item" *ngIf="!auth.isAdmin()">
           <a
             class="nav-link"
             routerLink="/about"
@@ -42,7 +49,8 @@
           </a>
         </li>
 
-        <li class="nav-item">
+        <!-- Services -->
+        <li class="nav-item" *ngIf="!auth.isAdmin()">
           <a
             class="nav-link"
             routerLink="/services"
@@ -51,6 +59,7 @@
           </a>
         </li>
 
+        <!-- Destinations -->
         <li class="nav-item">
           <a
             class="nav-link"
@@ -60,38 +69,116 @@
           </a>
         </li>
 
-        <li class="nav-item" *ngIf="auth.isLoggedIn()">
+
+        <!-- ========================= -->
+        <!-- USER ONLY -->
+        <!-- ========================= -->
+
+        <!-- Contact Us -->
+        <li
+          class="nav-item"
+          *ngIf="auth.isLoggedIn() && !auth.isAdmin()">
+
           <a
             class="nav-link"
             routerLink="/contact"
             routerLinkActive="active">
             Contact Us
           </a>
+
         </li>
 
-        <li class="nav-item" *ngIf="auth.isLoggedIn()">
+
+        <!-- My Complaints -->
+        <li
+          class="nav-item"
+          *ngIf="auth.isLoggedIn() && !auth.isAdmin()">
+
           <a
             class="nav-link"
             routerLink="/complaints"
             routerLinkActive="active">
             My Complaints
           </a>
+
         </li>
 
-        <li class="nav-item">
+
+        <!-- User Chat -->
+        <li
+          class="nav-item"
+          *ngIf="auth.isLoggedIn() && !auth.isAdmin()">
+
           <a
             class="nav-link"
             routerLink="/chat"
             routerLinkActive="active">
             Chat
           </a>
+
+        </li>
+
+
+        <!-- ========================= -->
+        <!-- ADMIN ONLY -->
+        <!-- ========================= -->
+
+        <!-- Admin Dashboard -->
+        <li
+          class="nav-item"
+          *ngIf="auth.isLoggedIn() && auth.isAdmin()">
+
+          <a
+            class="nav-link"
+            routerLink="/admin"
+            routerLinkActive="active">
+            Dashboard
+          </a>
+
+        </li>
+
+
+        <!-- Admin Complaints -->
+        <li
+          class="nav-item"
+          *ngIf="auth.isLoggedIn() && auth.isAdmin()">
+
+          <a
+            class="nav-link"
+            routerLink="/all-complaints"
+            routerLinkActive="active">
+            Complaints
+          </a>
+
+        </li>
+
+
+        <!-- Admin Chat -->
+        <li
+          class="nav-item"
+          *ngIf="auth.isLoggedIn() && auth.isAdmin()">
+
+          <a
+            class="nav-link"
+            routerLink="/admin/chat"
+            routerLinkActive="active">
+            Chat
+          </a>
+
         </li>
 
       </ul>
 
+
+      <!-- ========================= -->
+      <!-- RIGHT SIDE -->
+      <!-- ========================= -->
+
       <div class="d-flex gap-2">
 
-        <ng-container *ngIf="!auth.isLoggedIn(); else loggedIn">
+        <!-- NOT LOGGED IN -->
+        <ng-container
+          *ngIf="!auth.isLoggedIn(); else loggedIn">
 
           <button
             class="btn login-btn"
@@ -107,21 +194,20 @@
 
         </ng-container>
 
+
+        <!-- LOGGED IN -->
         <ng-template #loggedIn>
 
+          <!-- USER PROFILE ONLY -->
           <button
+            *ngIf="!auth.isAdmin()"
             class="btn login-btn"
             routerLink="/profile">
             Profile
           </button>
 
-          <button
-            *ngIf="auth.isAdmin()"
-            class="btn login-btn"
-            routerLink="/admin">
-            Admin
-          </button>
 
+          <!-- LOGOUT -->
           <button
             class="btn btn-outline-danger"
             (click)="logout()">

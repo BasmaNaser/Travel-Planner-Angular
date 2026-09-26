@@ -1,10 +1,4 @@
-<nav>
-    <ul>
-        <li>
-            <a routerLink="/all-complaints"> hhhhhhhhhhhhhhhhhhhhhhhhhhhhh</a>
-        </li>
-    </ul>
-</nav>
+<app-navbar></app-navbar>
 
 <div class="all-complaints-page">
   <div class="background-glow glow-one"></div>
@@ -95,36 +89,50 @@
           <p class="message">{{ complaint.message }}</p>
         </div>
 
-        <div class="status-editor">
-          <label>
-            <i class="bi bi-arrow-repeat"></i>
-            Update status
-          </label>
+<div class="status-editor">
 
-          <div class="select-wrap">
-            <select
-  class="form-select"
-  [(ngModel)]="complaint.status"
-  [disabled]="updatingId === getId(complaint)"
-  (change)="changeStatus(complaint, $event)"
->
-  <option
-    *ngFor="let status of statuses"
-    [ngValue]="status.value"
+  <label>
+    <i class="bi bi-arrow-repeat"></i>
+    Update status
+  </label>
+
+  <div class="select-wrap">
+
+    <select
+      class="form-select"
+      [ngModel]="complaint.status"
+      (ngModelChange)="changeStatus(complaint, $event)"
+      [disabled]="updatingId === getId(complaint)"
+    >
+
+      <option
+        *ngFor="let status of statuses"
+        [ngValue]="status.value"
+      >
+        {{ status.label }}
+      </option>
+
+    </select>
+
+    <span
+      *ngIf="updatingId === getId(complaint)"
+      class="mini-spinner">
+    </span>
+
+  </div>
+
+  <small
+    *ngIf="updatingId === getId(complaint)"
+    class="updating-text"
   >
-    {{ status.label }}
-  </option>
-</select>
+    Saving...
+  </small>
 
-            <span *ngIf="updatingId === getId(complaint)" class="mini-spinner"></span>
-          </div>
+</div>
 
-          <small *ngIf="updatingId === getId(complaint)" class="updating-text">
-            Saving...
-          </small>
-        </div>
 
       </article>
     </div>
   </div>
 </div>
+<app-footer></app-footer>

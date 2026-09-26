@@ -61,6 +61,8 @@ export class Login {
 
   successMessage = '';
 
+  showPassword = false;
+
 
   // =========================================================
   // FORM
@@ -105,6 +107,10 @@ export class Login {
     return this.form.controls.password;
   }
 
+  togglePassword(): void {
+    this.showPassword = !this.showPassword;
+  }
+
 
   // =========================================================
   // FIELD ERRORS
@@ -126,7 +132,12 @@ export class Login {
       return '';
     }
 
-
+    if (
+  field === 'email' &&
+  control.errors['userNotFound']
+) {
+  return 'User not found. Please sign up first.';
+}
     // =======================================================
     // WRONG EMAIL OR PASSWORD
     // =======================================================
@@ -381,123 +392,146 @@ export class Login {
         // LOGIN ERROR
         // ===================================================
 
-        error: (error) => {
+error: (error) => {
 
-          console.error(
-            '[Login Page] Login API error:',
-            error
-          );
+  // Stop loading for every error
+  this.loading = false;
 
-
-          this.loading = false;
-
-
-          const backendMessage =
-            String(
-              error?.error?.message ||
-              error?.message ||
-              ''
-            );
+  console.error(
+    '[Login Page] Login API error:',
+    error
+  );
 
 
-          const normalizedMessage =
-            backendMessage.toLowerCase();
+  // Get backend message
+  const backendMessage = String(
+    error?.error?.message ??
+    error?.error ??
+    error?.message ??
+    ''
+  ).trim();
 
 
-          // =================================================
-          // WRONG EMAIL OR PASSWORD
-          // =================================================
-          //
-          // Important:
-          // We DO NOT show password pattern validation.
-          //
-          // The password only gets:
-          // "Email or password is incorrect."
-          //
-          // when backend rejects the credentials.
-          // =================================================
-
-          if (
-            error?.status === 401 ||
-            (
-              error?.status === 400 &&
-              (
-                normalizedMessage.includes(
-                  'incorrect'
-                ) ||
-
-                normalizedMessage.includes(
-                  'invalid credentials'
-                ) ||
-
-                normalizedMessage.includes(
-                  'email or password'
-                ) ||
-
-                normalizedMessage.includes(
-                  'wrong password'
-                )
-              )
-            )
-          ) {
-
-            this.password.setErrors({
-
-              ...(this.password.errors ?? {}),
-
-              invalidCredentials: true
-
-            });
+  const normalizedMessage =
+    backendMessage.toLowerCase();
 
 
-            this.password.markAsTouched();
+  console.log(
+    '[Login Page] Backend message:',
+    backendMessage
+  );
+
+  console.log(
+    '[Login Page] Status:',
+    error?.status
+  );
 
 
-            console.log(
-              '[Login Page] Email or password is incorrect.'
-            );
+  // ================================================
+  // USER NOT FOUND
+  // ================================================
+
+  if (
+    error?.status === 404 &&
+    normalizedMessage.includes('user not found')
+  ) {
+
+    // Remove old password error
+    if (this.password.errors) {
+
+      const passwordErrors = {
+        ...this.password.errors
+      };
+
+      delete passwordErrors['invalidCredentials'];
+
+      this.password.setErrors(
+        Object.keys(passwordErrors).length > 0
+          ? passwordErrors
+          : null
+      );
+    }
 
 
-            return;
-          }
+    // Put error under EMAIL
+    this.email.setErrors({
+
+      ...(this.email.errors ?? {}),
+
+      userNotFound: true
+
+    });
 
 
-          // =================================================
-          // OTHER BACKEND FIELD ERRORS
-          // =================================================
-
-          const mappedMessage =
-            applyBackendErrors(
-              this.form,
-              error
-            );
+    this.email.markAsTouched();
 
 
-          if (
-            mappedMessage
-          ) {
-
-            this.errorMessage =
-              mappedMessage;
+    return;
+  }
 
 
-            return;
-          }
+  // ================================================
+  // WRONG PASSWORD
+  // ================================================
+
+  if (
+    error?.status === 401 ||
+    normalizedMessage.includes('incorrect') ||
+    normalizedMessage.includes('invalid credentials') ||
+    normalizedMessage.includes('email or password') ||
+    normalizedMessage.includes('wrong password')
+  ) {
+
+    this.password.setErrors({
+
+      ...(this.password.errors ?? {}),
+
+      invalidCredentials: true
+
+    });
 
 
-          // =================================================
-          // GENERAL ERROR
-          // =================================================
+    this.password.markAsTouched();
 
-          this.errorMessage =
-            apiMessage(
-              error,
-              'Something went wrong. Please try again.'
-            );
 
-        }
+    return;
+  }
 
-      });
+
+  // ================================================
+  // OTHER BACKEND ERRORS
+  // ================================================
+
+  const mappedMessage =
+    applyBackendErrors(
+      this.form,
+      error
+    );
+
+
+  if (mappedMessage) {
+
+    this.errorMessage =
+      mappedMessage;
+
+    return;
+  }
+
+
+  // ================================================
+  // GENERAL ERROR
+  // ================================================
+
+  this.errorMessage =
+    apiMessage(
+      error,
+      'Something went wrong. Please try again.'
+    );
+
+}
+
+
+        });
 
   }
 

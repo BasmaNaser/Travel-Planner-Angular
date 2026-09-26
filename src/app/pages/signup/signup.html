@@ -167,12 +167,26 @@
                     Password
                   </label>
 
-                  <input
-                    type="password"
-                    class="form-control"
-                    formControlName="password"
-                    placeholder="Enter your password"
-                  >
+                  <div class="input-group">
+                    <input
+                      [type]="showPassword ? 'text' : 'password'"
+                      class="form-control"
+                      formControlName="password"
+                      placeholder="Enter your password"
+                    >
+
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary"
+                      (click)="togglePassword()"
+                      aria-label="Toggle password visibility"
+                    >
+                      <i
+                        class="bi"
+                        [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"
+                      ></i>
+                    </button>
+                  </div>
 
                   @if (fieldError('password')) {
 
@@ -193,12 +207,26 @@
                     Confirm Password
                   </label>
 
-                  <input
-                    type="password"
-                    class="form-control"
-                    formControlName="confirmPassword"
-                    placeholder="Confirm your password"
-                  >
+                  <div class="input-group">
+                    <input
+                      [type]="showConfirmPassword ? 'text' : 'password'"
+                      class="form-control"
+                      formControlName="confirmPassword"
+                      placeholder="Confirm your password"
+                    >
+
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary"
+                      (click)="toggleConfirmPassword()"
+                      aria-label="Toggle confirm password visibility"
+                    >
+                      <i
+                        class="bi"
+                        [ngClass]="showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'"
+                      ></i>
+                    </button>
+                  </div>
 
                   @if (fieldError('confirmPassword')) {
 

@@ -83,12 +83,26 @@
                     Password
                   </label>
 
-                  <input
-                    type="password"
-                    class="form-control"
-                    formControlName="password"
-                    placeholder="Enter your password"
-                  >
+                  <div class="input-group">
+                    <input
+                      [type]="showPassword ? 'text' : 'password'"
+                      class="form-control"
+                      formControlName="password"
+                      placeholder="Enter your password"
+                    >
+
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary"
+                      (click)="togglePassword()"
+                      aria-label="Toggle password visibility"
+                    >
+                      <i
+                        class="bi"
+                        [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"
+                      ></i>
+                    </button>
+                  </div>
 
                   @if (fieldError('password')) {
 

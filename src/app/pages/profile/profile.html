@@ -86,13 +86,11 @@
                   !imagePreview &&
                   user?.profilePicture
                 "
-                [src]="user.profilePicture"
+                [src]="getProfileImageUrl()"
                 class="profile-image"
                 alt="Profile Picture"
                 (click)="
-                  openImage(
-                    user.profilePicture
-                  )
+                  openImage(getProfileImageUrl())
                 "
               />
 
@@ -744,11 +742,11 @@
 
 
                   <span
-                    [class]="
+                    /* [class]="
                       getBookingStatusClass(
                         booking?.Status
                       )
-                    "
+                    " */
                   >
 
                     <!-- <i
@@ -1151,6 +1149,12 @@
                     characters and contain uppercase,
                     lowercase, number and special
                     character.
+                  </span>
+
+                  <span
+                    *ngIf="newPassword.errors?.['sameAsCurrent']"
+                  >
+                    New password must be different from your current password.
                   </span>
 
                 </div>

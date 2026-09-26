@@ -70,12 +70,13 @@ export const routes: Routes = [
 
   {
     path: 'book/:id',
-    component: BookingComponent
+    component: BookingComponent,
   },
 
   {
     path: 'payments/:id',
-    component: PaymentsComponent
+    component: PaymentsComponent,
+    canActivate: [authGuard]
   },
 
   {
