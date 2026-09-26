@@ -1,7 +1,6 @@
-
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 import { SearchPipe } from '../../Pipes/search-pipe';
@@ -40,7 +39,8 @@ export class Home implements OnInit {
   destinationError = '';
 
   constructor(
-    private readonly destinationService: DestinationsService
+    private readonly destinationService: DestinationsService,
+    private readonly router: Router
   ) {}
 
   ngOnInit(): void {
@@ -90,9 +90,28 @@ export class Home implements OnInit {
 
   addToCart(destination: any): void {
 
-    this.tripList.push(destination);
+    console.log('Selected destination:', destination);
 
-    console.log('Added to trip:', destination);
+    const destinationId =
+      destination?._id ||
+      destination?.id;
+
+    if (!destinationId) {
+      console.error(
+        '❌ Destination ID not found:',
+        destination
+      );
+      return;
+    }
+
+    console.log(
+      '➡️ Navigating to destination:',
+      destinationId
+    );
+
+    this.router.navigate([
+      '/destinations',
+      destinationId
+    ]);
   }
 }
-
