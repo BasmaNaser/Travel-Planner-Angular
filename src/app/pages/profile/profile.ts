@@ -682,4 +682,8 @@ export class Profile implements OnInit {
   get confirmPassword() {
     return this.passwordForm.controls.confirmPassword;
   }
+
+  
 }
+
+
