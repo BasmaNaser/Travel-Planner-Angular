@@ -1,6 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnInit
+} from '@angular/core';
+
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import {
+  Router,
+  RouterLink
+} from '@angular/router';
+
 import { CommonModule } from '@angular/common';
 
 import { SearchPipe } from '../../Pipes/search-pipe';
@@ -14,6 +23,7 @@ import { Footer } from '../../components/footer/footer';
 @Component({
   selector: 'app-home',
   standalone: true,
+
   imports: [
     FormsModule,
     RouterLink,
@@ -23,6 +33,7 @@ import { Footer } from '../../components/footer/footer';
     Footer,
     CommonModule
   ],
+
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
@@ -40,7 +51,8 @@ export class Home implements OnInit {
 
   constructor(
     private readonly destinationService: DestinationsService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -52,55 +64,76 @@ export class Home implements OnInit {
     this.loadingDestinations = true;
     this.destinationError = '';
 
-    this.destinationService.getAllDestinations().subscribe({
+    this.destinationService
+      .getAllDestinations()
+      .subscribe({
 
-      next: (response: any) => {
+        next: (response: any) => {
 
-        console.log('DESTINATIONS RESPONSE:', response);
+          console.log(
+            'DESTINATIONS RESPONSE:',
+            response
+          );
 
-        this.destinations =
-          response?.destinations ??
-          response?.data ??
-          [];
+          this.destinations =
+            response?.destinations ??
+            response?.data ??
+            [];
 
-        // أول 3 فقط
-        this.destinations =
-          this.destinations.slice(0, 3);
+          // أول 3 فقط
+          this.destinations =
+            this.destinations.slice(0, 3);
 
-        console.log('HOME DESTINATIONS:', this.destinations);
+          console.log(
+            'HOME DESTINATIONS:',
+            this.destinations
+          );
 
-        this.loadingDestinations = false;
-      },
+          this.loadingDestinations = false;
 
-      error: (error: any) => {
+          // تأكيد تحديث الـ UI
+          this.cdr.detectChanges();
+        },
 
-        console.error('GET DESTINATIONS ERROR:', error);
+        error: (error: any) => {
 
-        this.destinations = [];
+          console.error(
+            'GET DESTINATIONS ERROR:',
+            error
+          );
 
-        this.destinationError =
-          error?.error?.message ||
-          'Unable to load destinations.';
+          this.destinations = [];
 
-        this.loadingDestinations = false;
-      }
+          this.destinationError =
+            error?.error?.message ||
+            'Unable to load destinations.';
 
-    });
+          this.loadingDestinations = false;
+
+          this.cdr.detectChanges();
+        }
+
+      });
   }
 
   addToCart(destination: any): void {
 
-    console.log('Selected destination:', destination);
+    console.log(
+      'Selected destination:',
+      destination
+    );
 
     const destinationId =
       destination?._id ||
       destination?.id;
 
     if (!destinationId) {
+
       console.error(
         '❌ Destination ID not found:',
         destination
       );
+
       return;
     }
 

@@ -1,5 +1,5 @@
-
 import {
+  ChangeDetectorRef,
   Component,
   inject
 } from '@angular/core';
@@ -47,11 +47,14 @@ import {
 })
 export class ForgetPasswordEmail {
 
-  private fb =
+  private readonly fb =
     inject(FormBuilder);
 
-  private authService =
+  private readonly authService =
     inject(AuthService);
+
+  private readonly cdr =
+    inject(ChangeDetectorRef);
 
 
   loading = false;
@@ -95,12 +98,16 @@ export class ForgetPasswordEmail {
 
 
     if (this.email.errors['backend']) {
+
       return this.email.errors['backend'];
+
     }
 
 
     if (this.email.errors['required']) {
+
       return 'Email is required.';
+
     }
 
 
@@ -108,11 +115,14 @@ export class ForgetPasswordEmail {
       this.email.errors['email'] ||
       this.email.errors['pattern']
     ) {
+
       return 'Enter a valid Gmail address.';
+
     }
 
 
     return '';
+
   }
 
 
@@ -127,11 +137,16 @@ export class ForgetPasswordEmail {
 
       this.form.markAllAsTouched();
 
+      this.cdr.detectChanges();
+
       return;
+
     }
 
 
     this.loading = true;
+
+    this.cdr.detectChanges();
 
 
     const email =
@@ -171,6 +186,10 @@ export class ForgetPasswordEmail {
             email
           );
 
+
+          // Update UI immediately — no refresh.
+          this.cdr.detectChanges();
+
         },
 
 
@@ -198,6 +217,10 @@ export class ForgetPasswordEmail {
               error,
               'Unable to send reset link.'
             );
+
+
+          // Update UI immediately — no refresh.
+          this.cdr.detectChanges();
 
         }
 

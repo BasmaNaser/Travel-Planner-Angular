@@ -1,27 +1,46 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  inject
+} from '@angular/core';
 import { Navbar } from '../../components/navbar/navbar';
 import { Footer } from '../../components/footer/footer';
 import { UserService } from '../../core/services/user.service';
-import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
-type ComplaintStatus = 'pending' | 'inProcess' | 'resolved';
+type ComplaintStatus =
+  | 'pending'
+  | 'inProcess'
+  | 'resolved';
 
 @Component({
   selector: 'app-all-complaints',
   standalone: true,
-  imports: [CommonModule,FormsModule,Navbar,Footer],
+  imports: [
+    CommonModule,
+    FormsModule,
+    Navbar,
+    Footer
+  ],
   templateUrl: './all-complaints.html',
   styleUrl: './all-complaints.css'
 })
 export class AllComplaints implements OnInit {
 
-  private readonly userService = inject(UserService);
+  private readonly userService =
+    inject(UserService);
+
+  private readonly cdr =
+    inject(ChangeDetectorRef);
 
   complaints: any[] = [];
+
   loading = true;
+
   errorMessage = '';
+
   updatingId: string | null = null;
 
   readonly statuses: {
@@ -51,184 +70,271 @@ export class AllComplaints implements OnInit {
     this.loading = true;
     this.errorMessage = '';
 
-    console.log('➡️ Requesting all complaints...');
+    console.log(
+      '➡️ Requesting all complaints...'
+    );
 
-    this.userService.getAllComplaints().subscribe({
+    this.userService
+      .getAllComplaints()
+      .subscribe({
 
-      next: (response: any) => {
+        next: (response: any) => {
 
-        console.log('✅ ALL COMPLAINTS RESPONSE:', response);
+          console.log(
+            '✅ ALL COMPLAINTS RESPONSE:',
+            response
+          );
 
-        this.complaints = response?.data ?? [];
+          this.complaints =
+            response?.data ?? [];
 
-        this.loading = false;
-      },
+          this.loading = false;
 
-      error: (error: any) => {
+          // تحديث الـ UI فورًا
+          this.cdr.detectChanges();
+        },
 
-        console.error('❌ ALL COMPLAINTS ERROR:', error);
+        error: (error: any) => {
 
-        this.complaints = [];
+          console.error(
+            '❌ ALL COMPLAINTS ERROR:',
+            error
+          );
 
-        this.errorMessage =
-          error?.error?.message ||
-          `Unable to load complaints. Status: ${error?.status || 'Unknown'}`;
+          this.complaints = [];
 
-        this.loading = false;
+          this.errorMessage =
+            error?.error?.message ||
+            `Unable to load complaints. Status: ${
+              error?.status || 'Unknown'
+            }`;
+
+          this.loading = false;
+
+          // تحديث الـ UI في حالة الخطأ أيضًا
+          this.cdr.detectChanges();
+        }
+
+      });
+  }
+
+  getUserImage(complaint: any): string {
+
+    const image =
+      complaint?.userId?.profilePicture;
+
+    if (!image) {
+      return '';
+    }
+
+    if (image.startsWith('http')) {
+      return image;
+    }
+
+    return `http://localhost:5000${
+      image.startsWith('/')
+        ? ''
+        : '/'
+    }${image}`;
+  }
+
+  changeStatus(
+    complaint: any,
+    newStatus: ComplaintStatus
+  ): void {
+
+    console.log(
+      '🔄 Selected status:',
+      newStatus
+    );
+
+    console.log(
+      '🔄 Old status:',
+      complaint.status
+    );
+
+    const allowedStatuses:
+      ComplaintStatus[] = [
+        'pending',
+        'inProcess',
+        'resolved'
+      ];
+
+    if (
+      !allowedStatuses.includes(newStatus)
+    ) {
+      console.error(
+        '❌ Invalid status:',
+        newStatus
+      );
+
+      return;
+    }
+
+    const oldStatus =
+      complaint.status;
+
+    if (
+      newStatus === oldStatus
+    ) {
+      return;
+    }
+
+    const id =
+      this.getId(complaint);
+
+    if (!id) {
+
+      console.error(
+        '❌ Complaint ID not found:',
+        complaint
+      );
+
+      return;
+    }
+
+    this.updatingId = id;
+    this.errorMessage = '';
+
+    /*
+     * Optimistic update
+     * الحالة تتغير فورًا في الشاشة
+     */
+    complaint.status =
+      newStatus;
+
+    this.complaints = [
+      ...this.complaints
+    ];
+
+    this.cdr.detectChanges();
+
+    console.log(
+      '📤 Updating complaint:',
+      {
+        id,
+        status: newStatus
       }
+    );
 
-    });
-  }
-getUserImage(complaint: any): string {
-  const image = complaint?.userId?.profilePicture;
+    this.userService
+      .updateComplaintStatus(
+        id,
+        newStatus
+      )
+      .subscribe({
 
-  if (!image) {
-    return '';
-  }
+        next: (response: any) => {
 
-  if (image.startsWith('http')) {
-    return image;
-  }
+          console.log(
+            '✅ STATUS UPDATED:',
+            response
+          );
 
-  return `http://localhost:5000${image.startsWith('/') ? '' : '/'}${image}`;
-}
+          /*
+           * بعد نجاح update
+           * نجيب أحدث data من backend
+           */
+          this.userService
+            .getAllComplaints()
+            .subscribe({
 
-changeStatus(
-  complaint: any,
-  newStatus: ComplaintStatus
-): void {
+              next: (
+                complaintsResponse: any
+              ) => {
 
-  console.log('🔄 Selected status:', newStatus);
-  console.log('🔄 Old status:', complaint.status);
+                console.log(
+                  '✅ REFRESHED COMPLAINTS:',
+                  complaintsResponse
+                );
 
-  const allowedStatuses: ComplaintStatus[] = [
-    'pending',
-    'inProcess',
-    'resolved'
-  ];
+                this.complaints =
+                  complaintsResponse?.data ??
+                  [];
 
-  if (!allowedStatuses.includes(newStatus)) {
-    console.error('❌ Invalid status:', newStatus);
-    return;
-  }
+                this.updatingId = null;
 
-  const oldStatus = complaint.status;
+                this.cdr.detectChanges();
+              },
 
-  if (newStatus === oldStatus) {
-    return;
-  }
+              error: (
+                error: any
+              ) => {
 
-  const id = this.getId(complaint);
+                console.error(
+                  '❌ Failed to reload complaints:',
+                  error
+                );
 
-  if (!id) {
-    console.error('❌ Complaint ID not found:', complaint);
-    return;
-  }
+                /*
+                 * الـ update نجح بالفعل،
+                 * فنخلي الحالة الجديدة
+                 */
+                complaint.status =
+                  newStatus;
 
-  this.updatingId = id;
-  this.errorMessage = '';
+                this.complaints = [
+                  ...this.complaints
+                ];
 
-  /*
-   * Optimistic update:
-   * نغير الـ UI فورًا بدون انتظار refresh.
-   */
-  complaint.status = newStatus;
+                this.updatingId = null;
 
-  // Force Angular to detect the new array reference
-  this.complaints = [...this.complaints];
+                this.errorMessage =
+                  'Status updated, but the complaints list could not be refreshed.';
 
-  console.log('📤 Updating complaint:', {
-    id,
-    status: newStatus
-  });
+                this.cdr.detectChanges();
+              }
 
-  this.userService
-    .updateComplaintStatus(id, newStatus)
-    .subscribe({
+            });
+        },
 
-      next: (response: any) => {
+        error: (
+          error: any
+        ) => {
 
-        console.log('✅ STATUS UPDATED:', response);
+          console.error(
+            '❌ STATUS UPDATE ERROR:',
+            error
+          );
 
-        /*
-         * مهم:
-         * بعد نجاح الـ API نعيد تحميل complaints
-         * من الـ backend عشان الـ UI يبقى مطابق
-         * للبيانات الموجودة في database.
-         */
-        this.userService
-          .getAllComplaints()
-          .subscribe({
+          /*
+           * الـ API فشل
+           * نرجع الحالة القديمة
+           */
+          complaint.status =
+            oldStatus;
 
-            next: (complaintsResponse: any) => {
+          this.complaints = [
+            ...this.complaints
+          ];
 
-              console.log(
-                '✅ REFRESHED COMPLAINTS:',
-                complaintsResponse
-              );
+          this.updatingId = null;
 
-              this.complaints =
-                complaintsResponse?.data ?? [];
+          this.errorMessage =
+            error?.error?.message ||
+            'Unable to update complaint status.';
 
-              this.updatingId = null;
-            },
+          this.cdr.detectChanges();
+        }
 
-            error: (error: any) => {
-
-              console.error(
-                '❌ Failed to reload complaints:',
-                error
-              );
-
-              /*
-               * الـ update نفسه نجح،
-               * لذلك نخلي الحالة الجديدة موجودة
-               * بدل ما نرجعها للقديمة.
-               */
-              complaint.status = newStatus;
-              this.complaints = [...this.complaints];
-
-              this.updatingId = null;
-
-              this.errorMessage =
-                'Status updated, but the complaints list could not be refreshed.';
-            }
-
-          });
-      },
-
-      error: (error: any) => {
-
-        console.error(
-          '❌ STATUS UPDATE ERROR:',
-          error
-        );
-
-        /*
-         * الـ API فشل → نرجع الحالة القديمة.
-         */
-        complaint.status = oldStatus;
-
-        this.complaints = [...this.complaints];
-
-        this.updatingId = null;
-
-        this.errorMessage =
-          error?.error?.message ||
-          'Unable to update complaint status.';
-      }
-
-    });
-}
-
-
-
-
-  getId(complaint: any): string {
-    return complaint?._id || complaint?.id || '';
+      });
   }
 
-  getUserName(complaint: any): string {
+  getId(
+    complaint: any
+  ): string {
+
+    return (
+      complaint?._id ||
+      complaint?.id ||
+      ''
+    );
+  }
+
+  getUserName(
+    complaint: any
+  ): string {
+
     return (
       complaint?.userId?.fullName ||
       complaint?.fullName ||
@@ -236,7 +342,10 @@ changeStatus(
     );
   }
 
-  getUserEmail(complaint: any): string {
+  getUserEmail(
+    complaint: any
+  ): string {
+
     return (
       complaint?.userId?.email ||
       complaint?.email ||
@@ -244,9 +353,13 @@ changeStatus(
     );
   }
 
-  getStatusClass(status: string): string {
+  getStatusClass(
+    status: string
+  ): string {
 
-    switch ((status || '').toLowerCase()) {
+    switch (
+      (status || '').toLowerCase()
+    ) {
 
       case 'resolved':
         return 'status-resolved';
@@ -262,9 +375,13 @@ changeStatus(
     }
   }
 
-  getStatusIcon(status: string): string {
+  getStatusIcon(
+    status: string
+  ): string {
 
-    switch ((status || '').toLowerCase()) {
+    switch (
+      (status || '').toLowerCase()
+    ) {
 
       case 'resolved':
         return 'bi-check-circle-fill';
@@ -277,13 +394,19 @@ changeStatus(
     }
   }
 
-  getStatusText(status: string): string {
+  getStatusText(
+    status: string
+  ): string {
 
     const found =
       this.statuses.find(
-        item => item.value === status
+        item =>
+          item.value === status
       );
 
-    return found?.label ?? 'Pending';
+    return (
+      found?.label ??
+      'Pending'
+    );
   }
 }

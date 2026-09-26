@@ -1,5 +1,4 @@
 .error-page {
-  min-height: 100vh;
   width: 100%;
   position: relative;
   overflow: hidden;
@@ -12,11 +11,13 @@
     radial-gradient(circle at 20% 20%, rgba(20, 184, 166, .12), transparent 30%),
     radial-gradient(circle at 80% 70%, rgba(45, 212, 191, .10), transparent 30%),
     linear-gradient(135deg, #f8fffe 0%, #ecfdfb 50%, #ffffff 100%);
-
   padding: 40px 20px;
 }
 
-
+.top{
+  margin: 0px 0px;
+  padding: 0px 0px;
+}
 /* =========================
    CONTENT
 ========================= */

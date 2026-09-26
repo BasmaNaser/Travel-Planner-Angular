@@ -1,5 +1,5 @@
-
 import {
+  ChangeDetectorRef,
   Component,
   OnInit,
   inject
@@ -32,12 +32,16 @@ import {
   applyBackendErrors
 } from '../../core/utils/api-error.util';
 
+
 function passwordMatchValidator(
   control: AbstractControl
 ): ValidationErrors | null {
 
-  const password = control.get('newPassword')?.value;
-  const confirmPassword = control.get('confirmPassword')?.value;
+  const password =
+    control.get('newPassword')?.value;
+
+  const confirmPassword =
+    control.get('confirmPassword')?.value;
 
   if (
     password &&
@@ -52,28 +56,52 @@ function passwordMatchValidator(
   return null;
 }
 
+
 @Component({
   selector: 'app-create-new-password',
+
   standalone: true,
+
   imports: [
     CommonModule,
     ReactiveFormsModule,
     RouterLink
   ],
+
   templateUrl: './create-new-password.html',
+
   styleUrl: './create-new-password.css'
 })
 export class CreateNewPassword implements OnInit {
 
-  private fb = inject(FormBuilder);
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  private authService = inject(AuthService);
+  private readonly fb =
+    inject(FormBuilder);
+
+  private readonly route =
+    inject(ActivatedRoute);
+
+  private readonly router =
+    inject(Router);
+
+  private readonly authService =
+    inject(AuthService);
+
+  private readonly cdr =
+    inject(ChangeDetectorRef);
+
 
   token = '';
+
   loading = false;
+
+  validatingToken = true;
+
+  tokenValid = false;
+
   errorMessage = '';
+
   successMessage = '';
+
 
   form = this.fb.nonNullable.group(
     {
@@ -81,6 +109,7 @@ export class CreateNewPassword implements OnInit {
         '',
         [
           Validators.required,
+
           Validators.pattern(
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@%$&*^#])[a-zA-Z0-9@%$&*^#]{8,}$/
           )
@@ -94,34 +123,114 @@ export class CreateNewPassword implements OnInit {
         ]
       ]
     },
+
     {
       validators: passwordMatchValidator
     }
   );
 
+
   ngOnInit(): void {
 
-    this.token =
-      this.route.snapshot.paramMap.get('token') || '';
+    this.route.paramMap.subscribe(params => {
 
-    if (!this.token) {
-      this.router.navigate([
-        '/reset-password-error'
-      ]);
-    }
+      this.token =
+        params.get('token') || '';
+
+      this.errorMessage = '';
+
+      this.successMessage = '';
+
+      this.tokenValid = false;
+
+      if (!this.token) {
+
+        this.validatingToken = false;
+
+        this.cdr.detectChanges();
+
+        this.router.navigate(
+          ['/reset-password-error']
+        );
+
+        return;
+      }
+
+      this.validateToken();
+
+    });
+
   }
+
 
   get newPassword() {
     return this.form.controls.newPassword;
   }
 
+
   get confirmPassword() {
     return this.form.controls.confirmPassword;
   }
 
+
+  validateToken(): void {
+
+    this.validatingToken = true;
+
+    this.errorMessage = '';
+
+    this.cdr.detectChanges();
+
+
+    this.authService
+      .validateResetToken(this.token)
+      .subscribe({
+
+        next: () => {
+
+          this.validatingToken = false;
+
+          this.tokenValid = true;
+
+          this.cdr.detectChanges();
+
+        },
+
+        error: (error) => {
+
+          this.validatingToken = false;
+
+          this.tokenValid = false;
+
+          const message =
+            apiMessage(
+              error,
+              'This password reset link is invalid or expired.'
+            );
+
+          this.cdr.detectChanges();
+
+
+          this.router.navigate(
+            ['/reset-password-error'],
+            {
+              queryParams: {
+                message
+              }
+            }
+          );
+
+        }
+
+      });
+
+  }
+
+
   fieldError(field: string): string {
 
-    const control = this.form.get(field);
+    const control =
+      this.form.get(field);
 
     if (
       !control ||
@@ -131,54 +240,112 @@ export class CreateNewPassword implements OnInit {
       return '';
     }
 
+
     if (control.errors['backend']) {
+
       return control.errors['backend'];
+
     }
+
 
     if (control.errors['required']) {
 
       if (field === 'newPassword') {
+
         return 'New password is required.';
+
       }
 
       if (field === 'confirmPassword') {
+
         return 'Confirm password is required.';
+
       }
+
     }
+
 
     if (control.errors['pattern']) {
+
       return 'Password must contain at least 8 characters, uppercase, lowercase, number and special character.';
+
     }
 
+
     return '';
+
   }
+
+
+  get passwordMismatch(): boolean {
+
+    return (
+      this.form.hasError('passwordMismatch') &&
+      this.confirmPassword.touched
+    );
+
+  }
+
 
   submit(): void {
 
     this.errorMessage = '';
+
     this.successMessage = '';
 
+
     if (this.form.invalid) {
+
       this.form.markAllAsTouched();
+
+      this.cdr.detectChanges();
+
       return;
+
     }
 
-    if (!this.token) {
-      this.router.navigate([
-        '/reset-password-error'
-      ]);
+
+    if (
+      !this.token ||
+      !this.tokenValid
+    ) {
+
+      this.router.navigate(
+        ['/reset-password-error'],
+        {
+          queryParams: {
+            message:
+              'This password reset link is invalid or expired.'
+          }
+        }
+      );
+
       return;
+
     }
+
 
     this.loading = true;
 
+    this.cdr.detectChanges();
+
+
     const data = {
-      newPassword: this.newPassword.value,
-      ConfirmedNewPassword: this.confirmPassword.value
+
+      newPassword:
+        this.newPassword.value,
+
+      ConfirmedNewPassword:
+        this.confirmPassword.value
+
     };
 
+
     this.authService
-      .resetPassword(this.token, data)
+      .resetPassword(
+        this.token,
+        data
+      )
       .subscribe({
 
         next: (response) => {
@@ -189,24 +356,31 @@ export class CreateNewPassword implements OnInit {
             response?.message ||
             'Password reset successfully.';
 
+          this.cdr.detectChanges();
+
+
           setTimeout(() => {
 
-            this.router.navigate([
-              '/reset-password-successfully'
-            ]);
+            this.router.navigate(
+              ['/reset-password-successfully']
+            );
 
-          }, 700);
+          }, 500);
+
         },
+
 
         error: (error) => {
 
           this.loading = false;
+
 
           const mappedMessage =
             applyBackendErrors(
               this.form,
               error
             );
+
 
           const message =
             mappedMessage ||
@@ -215,17 +389,25 @@ export class CreateNewPassword implements OnInit {
               'This password reset link is invalid or expired.'
             );
 
+
+          this.errorMessage = message;
+
+          this.cdr.detectChanges();
+
+
           this.router.navigate(
             ['/reset-password-error'],
             {
               queryParams: {
-                message: message
+                message
               }
             }
           );
+
         }
 
       });
-  }
-}
 
+  }
+
+}
