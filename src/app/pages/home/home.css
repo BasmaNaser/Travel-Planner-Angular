@@ -1,0 +1,226 @@
+:host {
+  display: block;
+}
+
+.hero-section {
+  min-height: 520px;
+
+  background:
+    linear-gradient(
+      rgba(0, 0, 0, 0.25),
+      rgba(0, 0, 0, 0.25)
+    ),
+    url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80')
+    center / cover no-repeat;
+
+  border-radius: 0 0 24px 24px;
+
+  margin-bottom: 40px;
+}
+
+.hero-overlay {
+  min-height: 520px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-content {
+  max-width: 800px;
+  margin: auto;
+}
+
+.hero-title {
+  font-weight: 800;
+  font-size: 2.5rem;
+
+  margin-bottom: 15px;
+}
+
+.hero-text {
+  font-weight: 300;
+  color: #f8f9fa;
+
+  max-width: 650px;
+
+  margin: 0 auto 25px;
+}
+
+
+/* Search */
+
+.search-box {
+  background: white;
+
+  border-radius: 50px;
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.15);
+
+  padding: 6px 8px 6px 20px;
+
+  max-width: 600px;
+
+  margin: auto;
+
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  color: #777;
+  font-size: 1.2rem;
+  margin-right: 10px;
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+
+  box-shadow: none;
+
+  flex: 1;
+
+  font-size: 0.95rem;
+}
+
+
+/* Button */
+
+.btn-custom-primary {
+  background-color: var(--primary-teal);
+
+  color: white;
+
+  border: none;
+
+  border-radius: 25px;
+
+  font-weight: 600;
+
+  padding: 9px 20px;
+
+  transition: 0.2s;
+}
+
+.btn-custom-primary:hover {
+  background-color: var(--primary-teal-hover);
+
+  color: white;
+}
+
+
+/* Section Header */
+
+.section-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: flex-end;
+
+  margin-bottom: 25px;
+}
+
+.see-all {
+  color: var(--primary-teal);
+
+  text-decoration: none;
+
+  font-weight: 600;
+
+  font-size: 0.9rem;
+}
+
+.see-all:hover {
+  color: var(--primary-teal-hover);
+}
+
+
+/* No Results */
+
+.no-results {
+  text-align: center;
+
+  padding: 60px 20px;
+
+  color: #777;
+}
+
+.no-results i {
+  font-size: 2rem;
+
+  color: var(--primary-teal);
+}
+
+.no-results h5 {
+  margin-top: 15px;
+}
+
+
+/* My Trip */
+
+.trip-box {
+  background: white;
+
+  border: 1px solid var(--border-color);
+
+  border-radius: 16px;
+
+  padding: 25px;
+
+  box-shadow:
+    0 5px 20px rgba(0, 0, 0, 0.04);
+}
+
+.trip-item {
+  background: var(--light-teal);
+
+  color: var(--dark-teal);
+
+  padding: 10px 15px;
+
+  border-radius: 10px;
+
+  font-weight: 600;
+}
+
+.trip-item i {
+  margin-right: 5px;
+}
+
+
+/* Mobile */
+
+@media (max-width: 768px) {
+
+  .hero-section {
+    min-height: 450px;
+  }
+
+  .hero-overlay {
+    min-height: 450px;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .search-box {
+    max-width: 95%;
+  }
+
+  .section-header {
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+}
+.top {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+
+    padding-top: 80px;
+    min-height: calc(100vh - 80px);
+} 

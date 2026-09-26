@@ -1,0 +1,70 @@
+body {
+  background-color: #f5f7fa;
+}
+
+.sidebar {
+  min-height: 100vh;
+  background-color: #123b4a;
+}
+
+.sidebar h3 {
+  font-weight: bold;
+}
+
+.menu {
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.menu:hover,
+.menu.active {
+  background-color: #198754;
+}
+
+.menu a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.stat-card {
+  border: none;
+  border-radius: 15px;
+  background-color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.stat-card h2 {
+  font-weight: bold;
+}
+
+.icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.users-card {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.users-card table {
+  margin-bottom: 0;
+}
+
+.users-card thead {
+  background-color: #f1f3f5;
+}
+
+.users-card th {
+  font-weight: 600;
+  padding: 12px 15px;
+}
+
+.users-card td {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+

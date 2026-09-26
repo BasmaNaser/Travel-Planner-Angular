@@ -1,0 +1,303 @@
+
+<div class="container py-5">
+
+  <div class="row justify-content-center align-items-center">
+
+    <div class="col-lg-10">
+
+      <div class="card border-0 shadow rounded-4 overflow-hidden">
+
+        <div class="row g-0">
+
+          <!-- IMAGE -->
+
+          <div class="col-md-5 d-none d-md-block">
+
+            <img
+              src="/imgs/download.png"
+              class="w-100 h-100 object-fit-cover"
+              alt="Travel Planner"
+            >
+
+          </div>
+
+
+          <!-- FORM -->
+
+          <div class="col-md-7">
+
+            <div class="card-body p-4 p-md-5">
+
+              <div class="text-center mb-4">
+
+                <h2 class="fw-bold">
+                  Create Account
+                </h2>
+
+                <p class="text-muted">
+                  Join Travel Planner today
+                </p>
+
+              </div>
+
+
+              @if (errorMessage) {
+
+                <div class="alert alert-danger">
+                  {{ errorMessage }}
+                </div>
+
+              }
+
+
+              <form
+                [formGroup]="form"
+                (ngSubmit)="submit()"
+              >
+
+
+                <!-- FULL NAME -->
+
+                <div class="mb-3">
+
+                  <label class="form-label">
+                    Full Name
+                  </label>
+
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="fullName"
+                    placeholder="Enter your full name"
+                  >
+
+                  @if (fieldError('fullName')) {
+
+                    <small class="text-danger d-block validation-error">
+                      {{ fieldError('fullName') }}
+                    </small>
+
+                  }
+
+                </div>
+
+
+                <!-- EMAIL -->
+
+                <div class="mb-3">
+
+                  <label class="form-label">
+                    Email
+                  </label>
+
+                  <input
+                    type="email"
+                    class="form-control"
+                    formControlName="email"
+                    placeholder="example@gmail.com"
+                  >
+
+                  @if (fieldError('email')) {
+
+                    <small class="text-danger d-block validation-error">
+                      {{ fieldError('email') }}
+                    </small>
+
+                  }
+
+                </div>
+
+
+                <!-- PHONE -->
+
+                <div class="mb-3">
+
+                  <label class="form-label">
+                    Phone Number
+                  </label>
+
+                  <input
+                    type="tel"
+                    class="form-control"
+                    formControlName="phone"
+                    placeholder="01XXXXXXXXX"
+                  >
+
+                  @if (fieldError('phone')) {
+
+                    <small class="text-danger d-block validation-error">
+                      {{ fieldError('phone') }}
+                    </small>
+
+                  }
+
+                </div>
+
+
+                <!-- DOB -->
+
+                <div class="mb-3">
+
+                  <label class="form-label">
+                    Date of Birth
+                  </label>
+
+                  <input
+                    type="date"
+                    class="form-control"
+                    formControlName="dob"
+                  >
+
+                  @if (fieldError('dob')) {
+
+                    <small class="text-danger d-block validation-error">
+                      {{ fieldError('dob') }}
+                    </small>
+
+                  }
+
+                </div>
+
+
+                <!-- PASSWORD -->
+
+                <div class="mb-3">
+
+                  <label class="form-label">
+                    Password
+                  </label>
+
+                  <div class="input-group">
+                    <input
+                      [type]="showPassword ? 'text' : 'password'"
+                      class="form-control"
+                      formControlName="password"
+                      placeholder="Enter your password"
+                    >
+
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary"
+                      (click)="togglePassword()"
+                      aria-label="Toggle password visibility"
+                    >
+                      <i
+                        class="bi"
+                        [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"
+                      ></i>
+                    </button>
+                  </div>
+
+                  @if (fieldError('password')) {
+
+                    <small class="text-danger d-block validation-error">
+                      {{ fieldError('password') }}
+                    </small>
+
+                  }
+
+                </div>
+
+
+                <!-- CONFIRM PASSWORD -->
+
+                <div class="mb-3">
+
+                  <label class="form-label">
+                    Confirm Password
+                  </label>
+
+                  <div class="input-group">
+                    <input
+                      [type]="showConfirmPassword ? 'text' : 'password'"
+                      class="form-control"
+                      formControlName="confirmPassword"
+                      placeholder="Confirm your password"
+                    >
+
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary"
+                      (click)="toggleConfirmPassword()"
+                      aria-label="Toggle confirm password visibility"
+                    >
+                      <i
+                        class="bi"
+                        [ngClass]="showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'"
+                      ></i>
+                    </button>
+                  </div>
+
+                  @if (fieldError('confirmPassword')) {
+
+                    <small class="text-danger d-block validation-error">
+                      {{ fieldError('confirmPassword') }}
+                    </small>
+
+                  }
+
+                  @if (
+                    form.errors?.['passwordMismatch'] &&
+                    confirmPassword.touched
+                  ) {
+
+                    <small class="text-danger d-block validation-error">
+                      Passwords do not match.
+                    </small>
+
+                  }
+
+                </div>
+
+
+                <button
+                  type="submit"
+                  class="btn btn-primary w-100"
+                  [disabled]="loading"
+                >
+
+                  @if (loading) {
+
+                    Creating Account...
+
+                  } @else {
+
+                    Sign Up
+
+                  }
+
+                </button>
+
+
+              </form>
+
+
+              <div class="text-center mt-4">
+
+                <span class="text-muted">
+                  Already have an account?
+                </span>
+
+                <a
+                  routerLink="/login"
+                  class="ms-1"
+                >
+                  Login
+                </a>
+
+              </div>
+
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

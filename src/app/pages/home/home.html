@@ -1,0 +1,95 @@
+<app-navbar></app-navbar>
+<section class="hero-section top">
+
+  <div class="hero-overlay">
+
+    <div class="container text-center text-white">
+
+      <div class="hero-content">
+
+        <h1 class="hero-title">
+          Your Next Adventure Starts Here
+        </h1>
+
+        <p class="hero-text">
+          Discover breathtaking destinations, plan seamless itineraries,
+          and make unforgettable memories with TripMate.
+        </p>
+
+        <!-- Search -->
+        <div class="search-box">
+
+          <i class="bi bi-geo-alt search-icon"></i>
+
+          <input
+            type="text"
+            [(ngModel)]="searchText"
+            placeholder="Where do you want to go?"
+          >
+
+          <button class="btn-custom-primary">
+
+            <i class="bi bi-search"></i>
+
+            Search
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- Popular Destinations -->
+<section class="container py-5">
+
+  <div class="section-header">
+    <div>
+      <h3 class="fw-bold mb-1">Popular Destinations</h3>
+      <p class="text-muted small mb-0">
+        Explore our selection of destinations from our database.
+      </p>
+    </div>
+
+    <a routerLink="/destinations" class="see-all">See All →</a>
+  </div>
+
+  <div *ngIf="loadingDestinations" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="text-muted mt-3">Loading destinations...</p>
+  </div>
+
+  <div *ngIf="!loadingDestinations && destinationError" class="alert alert-danger">
+    {{ destinationError }}
+  </div>
+
+  <div
+    *ngIf="!loadingDestinations && !destinationError"
+    class="row g-4"
+  >
+    @for (destination of destinations | search:searchText; track destination.id) {
+      <div class="col-md-6 col-lg-4">
+        <app-destination-card
+          [destination]="destination"
+          (addTrip)="addToCart($event)">
+        </app-destination-card>
+      </div>
+    }
+
+    @if ((destinations | search:searchText).length === 0) {
+      <div class="no-results">
+        <i class="bi bi-search"></i>
+        <h5>No destinations found</h5>
+        <p>Try searching for another destination.</p>
+      </div>
+    }
+  </div>
+
+</section>
+<app-footer></app-footer>

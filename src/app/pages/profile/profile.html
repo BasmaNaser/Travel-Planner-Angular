@@ -1,0 +1,1388 @@
+
+<app-navbar></app-navbar>
+
+<div class="top">
+  <main class="container py-5">
+
+  <!-- ========================= -->
+  <!-- LOADING -->
+  <!-- ========================= -->
+
+  <div
+    *ngIf="loading"
+    class="text-center py-5"
+  >
+    <div
+      class="spinner-border text-primary"
+      role="status"
+    ></div>
+
+    <p class="text-muted mt-3 mb-0">
+      Loading profile...
+    </p>
+  </div>
+
+
+  <!-- ========================= -->
+  <!-- ERROR -->
+  <!-- ========================= -->
+
+  <div
+    *ngIf="!loading && errorMessage"
+    class="alert alert-danger"
+  >
+    <i class="bi bi-exclamation-circle me-2"></i>
+
+    {{ errorMessage }}
+  </div>
+
+
+  <!-- ========================= -->
+  <!-- PROFILE -->
+  <!-- ========================= -->
+
+  <div
+    *ngIf="!loading && user"
+    class="profile-page"
+  >
+
+    <!-- ========================= -->
+    <!-- PROFILE HEADER -->
+    <!-- ========================= -->
+
+    <div
+      class="card border-0 shadow-sm rounded-4 mb-4"
+    >
+
+      <div class="card-body p-4 p-md-5">
+
+        <div
+          class="row align-items-center g-4"
+        >
+
+          <!-- PROFILE IMAGE -->
+
+          <div
+            class="col-md-4 text-center"
+          >
+
+            <div
+              class="profile-image-wrapper mx-auto"
+            >
+
+              <!-- Preview -->
+
+              <img
+                *ngIf="imagePreview"
+                [src]="imagePreview"
+                class="profile-image"
+                alt="Profile Preview"
+              />
+
+              <!-- Existing Image -->
+
+              <img
+                *ngIf="
+                  !imagePreview &&
+                  user?.profilePicture
+                "
+                [src]="getProfileImageUrl()"
+                class="profile-image"
+                alt="Profile Picture"
+                (click)="
+                  openImage(getProfileImageUrl())
+                "
+              />
+
+              <!-- Placeholder -->
+
+              <div
+                *ngIf="
+                  !imagePreview &&
+                  !user?.profilePicture
+                "
+                class="profile-image-placeholder"
+              >
+                <i class="bi bi-person"></i>
+              </div>
+
+            </div>
+
+
+            <!-- IMAGE ACTIONS -->
+
+            <div
+              class="profile-image-actions mt-3"
+            >
+
+              <label
+                class="btn btn-outline-primary btn-sm"
+              >
+
+                <i
+                  class="bi bi-camera me-1"
+                ></i>
+
+                Choose Photo
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  (change)="
+                    onImageSelected($event)
+                  "
+                />
+
+              </label>
+
+
+              <button
+                *ngIf="selectedImage"
+                type="button"
+                class="btn btn-primary btn-sm"
+                [disabled]="uploadingImage"
+                (click)="
+                  uploadProfilePicture()
+                "
+              >
+
+                <span
+                  *ngIf="uploadingImage"
+                  class="spinner-border spinner-border-sm me-1"
+                ></span>
+
+                {{
+                  uploadingImage
+                    ? 'Uploading...'
+                    : 'Upload'
+                }}
+
+              </button>
+
+
+              <button
+                *ngIf="user?.profilePicture"
+                type="button"
+                class="btn btn-outline-danger btn-sm"
+                [disabled]="deletingImage"
+                (click)="
+                  deleteProfilePicture()
+                "
+              >
+
+                <span
+                  *ngIf="deletingImage"
+                  class="spinner-border spinner-border-sm me-1"
+                ></span>
+
+                <i
+                  *ngIf="!deletingImage"
+                  class="bi bi-trash me-1"
+                ></i>
+
+                {{
+                  deletingImage
+                    ? 'Deleting...'
+                    : 'Delete'
+                }}
+
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <!-- PROFILE INFO -->
+
+          <div class="col-md-8">
+
+            <div
+              class="d-flex justify-content-between align-items-start flex-wrap gap-3"
+            >
+
+              <div>
+
+                <h2
+                  class="fw-bold mb-1"
+                >
+                  {{ user?.fullName || 'User' }}
+                </h2>
+
+                <p
+                  class="text-muted mb-2"
+                >
+                  <i
+                    class="bi bi-envelope me-2"
+                  ></i>
+
+                  {{ user?.email || '—' }}
+                </p>
+
+                <p
+                  class="text-muted mb-0"
+                  *ngIf="user?.userLocation"
+                >
+                  <i
+                    class="bi bi-geo-alt me-2"
+                  ></i>
+
+                  {{ user.userLocation }}
+                </p>
+
+              </div>
+
+
+              <button
+                *ngIf="!editMode"
+                type="button"
+                class="btn btn-primary"
+                (click)="enableEdit()"
+              >
+
+                <i
+                  class="bi bi-pencil me-1"
+                ></i>
+
+                Edit Profile
+
+              </button>
+
+            </div>
+
+
+            <!-- ABOUT -->
+
+            <div
+              class="profile-mini-card mt-4"
+              *ngIf="user?.about"
+            >
+
+              <h6
+                class="fw-bold mb-2"
+              >
+                <i
+                  class="bi bi-person-lines-fill me-2"
+                ></i>
+
+                About
+              </h6>
+
+              <p
+                class="text-muted mb-0"
+              >
+                {{ user.about }}
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- ALERTS -->
+    <!-- ========================= -->
+
+    <div
+      *ngIf="successMessage"
+      class="alert alert-success"
+    >
+
+      <i
+        class="bi bi-check-circle me-2"
+      ></i>
+
+      {{ successMessage }}
+
+    </div>
+
+
+    <div
+      *ngIf="errorMessage"
+      class="alert alert-danger"
+    >
+
+      <i
+        class="bi bi-exclamation-circle me-2"
+      ></i>
+
+      {{ errorMessage }}
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- PERSONAL INFORMATION -->
+    <!-- ========================= -->
+
+    <div
+      class="card border-0 shadow-sm rounded-4 mb-4"
+    >
+
+      <div
+        class="card-body p-4 p-md-5"
+      >
+
+        <div
+          class="d-flex justify-content-between align-items-center mb-4"
+        >
+
+          <div>
+
+            <h4
+              class="fw-bold mb-1"
+            >
+              <i
+                class="bi bi-person-vcard me-2"
+              ></i>
+
+              Personal Information
+            </h4>
+
+            <p
+              class="text-muted mb-0"
+            >
+              Manage your personal information.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <form
+          [formGroup]="form"
+          (ngSubmit)="updateProfile()"
+        >
+
+          <div class="row g-4">
+
+            <!-- FULL NAME -->
+
+            <div class="col-md-6">
+
+              <label
+                class="form-label fw-semibold"
+              >
+                Full Name
+              </label>
+
+              <input
+                type="text"
+                class="form-control"
+                formControlName="fullName"
+                [readonly]="!editMode"
+                [class.is-invalid]="
+                  fullName.invalid &&
+                  fullName.touched
+                "
+              />
+
+              <div
+                *ngIf="
+                  fullName.invalid &&
+                  fullName.touched
+                "
+                class="invalid-feedback"
+              >
+
+                Please enter a valid full name.
+
+              </div>
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="col-md-6">
+
+              <label
+                class="form-label fw-semibold"
+              >
+                Email
+              </label>
+
+              <input
+                type="email"
+                class="form-control"
+                [value]="user?.email || ''"
+                readonly
+              />
+
+            </div>
+
+
+            <!-- GENDER -->
+
+            <div class="col-md-6">
+
+              <label
+                class="form-label fw-semibold"
+              >
+                Gender
+              </label>
+
+              <select
+                class="form-select"
+                formControlName="gender"
+                [disabled]="!editMode"
+              >
+
+                <option
+                  [ngValue]="undefined"
+                >
+                  Select gender
+                </option>
+
+                <option
+                  value="Male"
+                >
+                  Male
+                </option>
+
+                <option
+                  value="Female"
+                >
+                  Female
+                </option>
+
+                <option
+                  value="Other"
+                >
+                  Other
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <!-- DATE OF BIRTH -->
+
+            <div class="col-md-6">
+
+              <label
+                class="form-label fw-semibold"
+              >
+                Date of Birth
+              </label>
+
+              <input
+                type="date"
+                class="form-control"
+                formControlName="dob"
+                [readonly]="!editMode"
+              />
+
+            </div>
+
+
+            <!-- LOCATION -->
+
+            <div class="col-md-6">
+
+              <label
+                class="form-label fw-semibold"
+              >
+                Location
+              </label>
+
+              <input
+                type="text"
+                class="form-control"
+                formControlName="userLocation"
+                [readonly]="!editMode"
+              />
+
+            </div>
+
+
+            <!-- ABOUT -->
+
+            <div class="col-12">
+
+              <label
+                class="form-label fw-semibold"
+              >
+                About
+              </label>
+
+              <textarea
+                class="form-control"
+                rows="5"
+                formControlName="about"
+                [readonly]="!editMode"
+              ></textarea>
+
+              <div
+                class="text-muted small mt-1"
+              >
+                Maximum 1000 characters.
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- EDIT BUTTONS -->
+
+          <div
+            *ngIf="editMode"
+            class="d-flex gap-2 mt-4"
+          >
+
+            <button
+              type="submit"
+              class="btn btn-primary"
+            >
+
+              <i
+                class="bi bi-check-lg me-1"
+              ></i>
+
+              Save Changes
+
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="cancelEdit()"
+            >
+
+              Cancel
+
+            </button>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- MY BOOKINGS -->
+    <!-- ========================= -->
+
+    <div
+      class="card border-0 shadow-sm rounded-4 mb-4"
+    >
+
+      <div
+        class="card-body p-4 p-md-5"
+      >
+
+        <div
+          class="section-header mb-4"
+        >
+
+          <div>
+
+            <h4
+              class="fw-bold mb-1"
+            >
+
+              <i
+                class="bi bi-calendar-check me-2"
+              ></i>
+
+              My Bookings
+
+            </h4>
+
+            <p
+              class="text-muted mb-0"
+            >
+              View your booking history.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- BOOKINGS LOADING -->
+
+        <div
+          *ngIf="bookingsLoading"
+          class="text-center py-4"
+        >
+
+          <div
+            class="spinner-border text-primary"
+          ></div>
+
+          <p
+            class="text-muted mt-2 mb-0"
+          >
+            Loading bookings...
+          </p>
+
+        </div>
+
+
+        <!-- BOOKING ERROR -->
+
+        <div
+          *ngIf="!bookingsLoading && bookingError"
+          class="alert alert-danger"
+        >
+
+          <i
+            class="bi bi-exclamation-circle me-2"
+          ></i>
+
+          {{ bookingError }}
+
+        </div>
+
+
+        <!-- NO BOOKINGS -->
+
+        <div
+          *ngIf="
+            !bookingsLoading &&
+            !bookingError &&
+            bookings.length === 0
+          "
+          class="text-center py-5"
+        >
+
+          <i
+            class="bi bi-calendar-x display-5 text-muted"
+          ></i>
+
+          <h5
+            class="fw-bold mt-3"
+          >
+            No Bookings Yet
+          </h5>
+
+          <p
+            class="text-muted mb-0"
+          >
+            You don't have any bookings yet.
+          </p>
+
+        </div>
+
+
+        <!-- BOOKINGS -->
+
+        <div
+          *ngIf="
+            !bookingsLoading &&
+            bookings.length > 0
+          "
+          class="row g-4"
+        >
+
+          <div
+            *ngFor="let booking of bookings"
+            class="col-md-6"
+          >
+
+            <div
+              class="booking-card h-100"
+            >
+
+              <!-- IMAGE -->
+
+              <img
+                [src]="getBookingImage(booking)"
+                class="booking-image"
+                alt="Destination"
+              />
+
+
+              <div
+                class="booking-content"
+              >
+
+                <div
+                  class="d-flex justify-content-between align-items-start gap-2"
+                >
+
+                  <div>
+
+                    <h5
+                      class="fw-bold mb-1"
+                    >
+                      {{
+                        getBookingDestination(
+                          booking
+                        )?.Name ||
+                        'Destination'
+                      }}
+                    </h5>
+
+                    <p
+                      class="text-muted small mb-0"
+                    >
+                      Booking ID:
+                      {{
+                        booking?._id ||
+                        '—'
+                      }}
+                    </p>
+
+                  </div>
+
+
+                  <span
+                    [class]="
+                      getBookingStatusClass(
+                        booking?.Status
+                      )
+                    "
+                  >
+
+                    <i
+                      class="bi me-1"
+                      [ngClass]="
+                        getBookingStatusIcon(
+                          booking?.Status
+                        )
+                      "
+                    ></i>
+
+                    {{
+                      getBookingStatusText(
+                        booking?.Status
+                      )
+                    }}
+
+                  </span>
+
+                </div>
+
+
+               <div class="booking-content">
+
+  <div
+    class="d-flex justify-content-between align-items-start gap-2"
+  >
+
+    <div>
+
+      <h5 class="fw-bold mb-1">
+        {{
+          getBookingDestination(booking)?.Name ||
+          'Destination'
+        }}
+      </h5>
+
+      <p class="text-muted small mb-0">
+        Booking ID:
+        {{
+          booking?._id || '—'
+        }}
+      </p>
+
+    </div>
+
+    <span
+      [class]="
+        getBookingStatusClass(
+          booking?.Status
+        )
+      "
+    >
+
+      <i
+        class="bi me-1"
+        [ngClass]="
+          getBookingStatusIcon(
+            booking?.Status
+          )
+        "
+      ></i>
+
+      {{
+        getBookingStatusText(
+          booking?.Status
+        )
+      }}
+
+    </span>
+
+  </div>
+
+
+  <div class="mt-3">
+
+  <p
+    class="mb-0"
+    *ngIf="booking?.StartDate"
+  >
+
+    <i class="bi bi-calendar3 me-2"></i>
+
+    {{
+      booking.StartDate
+        | date:'mediumDate'
+    }}
+
+  </p>
+
+</div>
+
+</div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- CHANGE PASSWORD -->
+    <!-- ========================= -->
+
+    <div
+      class="card border-0 shadow-sm rounded-4 mb-4"
+    >
+
+      <div
+        class="card-body p-4 p-md-5"
+      >
+
+        <div
+          class="d-flex justify-content-between align-items-center"
+        >
+
+          <div>
+
+            <h4
+              class="fw-bold mb-1"
+            >
+
+              <i
+                class="bi bi-shield-lock me-2"
+              ></i>
+
+              Change Password
+
+            </h4>
+
+            <p
+              class="text-muted mb-0"
+            >
+              Update your account password.
+            </p>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            (click)="togglePasswordSection()"
+          >
+
+            <i
+              class="bi"
+              [ngClass]="
+                showPasswordSection
+                  ? 'bi-chevron-up'
+                  : 'bi-lock'
+              "
+            ></i>
+
+            {{
+              showPasswordSection
+                ? 'Hide'
+                : 'Change Password'
+            }}
+
+          </button>
+
+        </div>
+
+
+        <!-- PASSWORD FORM -->
+
+        <div
+          *ngIf="showPasswordSection"
+          class="mt-4"
+        >
+
+          <!-- SUCCESS -->
+
+          <div
+            *ngIf="passwordSuccessMessage"
+            class="alert alert-success"
+          >
+
+            <i
+              class="bi bi-check-circle me-2"
+            ></i>
+
+            {{ passwordSuccessMessage }}
+
+          </div>
+
+
+          <!-- ERROR -->
+
+          <div
+            *ngIf="
+              passwordErrorMessage &&
+              !currentPasswordIncorrect
+            "
+            class="alert alert-danger"
+          >
+
+            <i
+              class="bi bi-exclamation-circle me-2"
+            ></i>
+
+            {{ passwordErrorMessage }}
+
+          </div>
+
+
+          <form
+            [formGroup]="passwordForm"
+            (ngSubmit)="changePassword()"
+          >
+
+            <div class="row g-4">
+
+              <!-- CURRENT PASSWORD -->
+
+              <div class="col-12">
+
+                <label
+                  class="form-label fw-semibold"
+                >
+                  Current Password
+                </label>
+
+
+                <div class="input-group">
+
+                  <input
+                    [type]="
+                      showCurrentPassword
+                        ? 'text'
+                        : 'password'
+                    "
+                    class="form-control"
+                    formControlName="currentPassword"
+
+                    [class.is-invalid]="
+                      (
+                        currentPassword.invalid &&
+                        currentPassword.touched
+                      ) ||
+                      currentPasswordIncorrect
+                    "
+
+                    (input)="
+                      currentPasswordIncorrect = false;
+                      passwordErrorMessage = ''
+                    "
+                  />
+
+
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="
+                      toggleCurrentPassword()
+                    "
+                  >
+
+                    <i
+                      class="bi"
+                      [ngClass]="
+                        showCurrentPassword
+                          ? 'bi-eye-slash'
+                          : 'bi-eye'
+                      "
+                    ></i>
+
+                  </button>
+
+                </div>
+
+
+                <!-- REQUIRED -->
+
+                <div
+                  *ngIf="
+                    currentPassword.invalid &&
+                    currentPassword.touched
+                  "
+                  class="invalid-feedback d-block"
+                >
+
+                  Current password is required.
+
+                </div>
+
+
+                <!-- WRONG PASSWORD -->
+
+                <div
+                  *ngIf="
+                    currentPasswordIncorrect
+                  "
+                  class="invalid-feedback d-block"
+                >
+
+                  <i
+                    class="bi bi-exclamation-circle me-1"
+                  ></i>
+
+                  Current password is incorrect.
+
+                </div>
+
+              </div>
+
+
+              <!-- NEW PASSWORD -->
+
+              <div class="col-md-6">
+
+                <label
+                  class="form-label fw-semibold"
+                >
+                  New Password
+                </label>
+
+
+                <div class="input-group">
+
+                  <input
+                    [type]="
+                      showNewPassword
+                        ? 'text'
+                        : 'password'
+                    "
+                    class="form-control"
+                    formControlName="newPassword"
+
+                    [class.is-invalid]="
+                      newPassword.invalid &&
+                      newPassword.touched
+                    "
+                  />
+
+
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="
+                      toggleNewPassword()
+                    "
+                  >
+
+                    <i
+                      class="bi"
+                      [ngClass]="
+                        showNewPassword
+                          ? 'bi-eye-slash'
+                          : 'bi-eye'
+                      "
+                    ></i>
+
+                  </button>
+
+                </div>
+
+
+                <small
+                  class="text-muted"
+                >
+                  Minimum 8 characters,
+                  including uppercase,
+                  lowercase, number and
+                  special character.
+                </small>
+
+
+                <div
+                  *ngIf="
+                    newPassword.invalid &&
+                    newPassword.touched
+                  "
+                  class="invalid-feedback d-block"
+                >
+
+                  <span
+                    *ngIf="
+                      newPassword.errors?.['required']
+                    "
+                  >
+                    New password is required.
+                  </span>
+
+                  <span
+                    *ngIf="
+                      newPassword.errors?.['minlength'] ||
+                      newPassword.errors?.['pattern']
+                    "
+                  >
+                    Password must be at least 8
+                    characters and contain uppercase,
+                    lowercase, number and special
+                    character.
+                  </span>
+
+                  <span
+                    *ngIf="newPassword.errors?.['sameAsCurrent']"
+                  >
+                    New password must be different from your current password.
+                  </span>
+
+                </div>
+
+              </div>
+
+
+              <!-- CONFIRM PASSWORD -->
+
+              <div class="col-md-6">
+
+                <label
+                  class="form-label fw-semibold"
+                >
+                  Confirm New Password
+                </label>
+
+
+                <div class="input-group">
+
+                  <input
+                    [type]="
+                      showConfirmPassword
+                        ? 'text'
+                        : 'password'
+                    "
+                    class="form-control"
+                    formControlName="confirmPassword"
+
+                    [class.is-invalid]="
+                      confirmPassword.invalid &&
+                      confirmPassword.touched
+                    "
+                  />
+
+
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="
+                      toggleConfirmPassword()
+                    "
+                  >
+
+                    <i
+                      class="bi"
+                      [ngClass]="
+                        showConfirmPassword
+                          ? 'bi-eye-slash'
+                          : 'bi-eye'
+                      "
+                    ></i>
+
+                  </button>
+
+                </div>
+
+
+                <div
+                  *ngIf="
+                    confirmPassword.invalid &&
+                    confirmPassword.touched
+                  "
+                  class="invalid-feedback d-block"
+                >
+
+                  Confirm password is required.
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- PASSWORD BUTTONS -->
+
+            <div
+              class="d-flex gap-2 mt-4"
+            >
+
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="changingPassword"
+              >
+
+                <span
+                  *ngIf="changingPassword"
+                  class="spinner-border spinner-border-sm me-1"
+                ></span>
+
+                {{
+                  changingPassword
+                    ? 'Changing...'
+                    : 'Change Password'
+                }}
+
+              </button>
+
+
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                (click)="
+                  cancelPasswordChange()
+                "
+              >
+
+                Cancel
+
+              </button>
+
+            </div>
+
+          </form>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- DELETE ACCOUNT -->
+    <!-- ========================= -->
+
+    <div
+      class="card border-0 shadow-sm rounded-4 border-danger mb-4"
+    >
+
+      <div
+        class="card-body p-4 p-md-5"
+      >
+
+        <div
+          class="d-flex justify-content-between align-items-center flex-wrap gap-3"
+        >
+
+          <div>
+
+            <h4
+              class="fw-bold text-danger mb-1"
+            >
+
+              <i
+                class="bi bi-trash3 me-2"
+              ></i>
+
+              Delete Account
+
+            </h4>
+
+            <p
+              class="text-muted mb-0"
+            >
+              Permanently delete your account
+              and all associated data.
+            </p>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="btn btn-outline-danger"
+            (click)="deleteAccount()"
+          >
+
+            <i
+              class="bi bi-trash3 me-1"
+            ></i>
+
+            Delete Account
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</main>
+
+
+<!-- ========================= -->
+<!-- IMAGE MODAL -->
+<!-- ========================= -->
+
+<div
+  *ngIf="showImageModal"
+  class="image-modal"
+  (click)="closeImage()"
+>
+
+  <div
+    class="image-modal-content"
+    (click)="$event.stopPropagation()"
+  >
+
+    <button
+      type="button"
+      class="image-modal-close"
+      (click)="closeImage()"
+    >
+
+      <i
+        class="bi bi-x-lg"
+      ></i>
+
+    </button>
+
+
+    <img
+      *ngIf="selectedImageUrl"
+      [src]="selectedImageUrl"
+      alt="Profile Picture"
+      class="image-modal-image"
+    />
+
+  </div>
+
+</div>
+
+</div>
+
+<app-footer></app-footer>
